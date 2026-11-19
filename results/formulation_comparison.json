@@ -1,0 +1,84 @@
+{
+  "eta": {
+    "objectives": "(P, η, ΔP)",
+    "n_reference": 6049,
+    "frac_unsupported": 0.9047776491982146,
+    "max_gap": 0.07420744280336414,
+    "hv_reference": 1.0800892391173578,
+    "weighted_sum": {
+      "hv": 0.9667753950415647,
+      "igd_plus": 0.07482524019090617,
+      "distinct_solutions": 70
+    },
+    "weighted_sum_hv_loss_vs_awa": 0.0710258146374486,
+    "best_by_hv": "MOEA/D-AWA",
+    "algorithms": {
+      "NSGA-II": {
+        "hv": "1.0065 +- 0.0055",
+        "igd_plus": "0.0424 +- 0.0072",
+        "frac_in_unsupported_region": 0.7730769230769232
+      },
+      "NSGA-III": {
+        "hv": "1.0315 +- 0.0013",
+        "igd_plus": "0.0252 +- 0.0008",
+        "frac_in_unsupported_region": 0.7466666666666667
+      },
+      "MOEA/D": {
+        "hv": "1.0385 +- 0.0006",
+        "igd_plus": "0.0258 +- 0.0001",
+        "frac_in_unsupported_region": 0.5128144838459915
+      },
+      "MOEA/D-WT": {
+        "hv": "1.0170 +- 0.0002",
+        "igd_plus": "0.0329 +- 0.0001",
+        "frac_in_unsupported_region": 0.5223973270999241
+      },
+      "MOEA/D-AWA": {
+        "hv": "1.0407 +- 0.0007",
+        "igd_plus": "0.0202 +- 0.0002",
+        "frac_in_unsupported_region": 0.6682417582417584
+      }
+    }
+  },
+  "sigma": {
+    "objectives": "(P, ΔP, Σ)",
+    "n_reference": 6056,
+    "frac_unsupported": 0.1299537648612946,
+    "max_gap": 0.006936643529447754,
+    "hv_reference": 1.210969146232147,
+    "weighted_sum": {
+      "hv": 1.1085742492738255,
+      "igd_plus": 0.09390868837780886,
+      "distinct_solutions": 74
+    },
+    "weighted_sum_hv_loss_vs_awa": 0.06283616650667659,
+    "best_by_hv": "MOEA/D-AWA",
+    "algorithms": {
+      "NSGA-II": {
+        "hv": "1.1607 +- 0.0063",
+        "igd_plus": "0.0349 +- 0.0071",
+        "frac_in_unsupported_region": 0.14571428571428574
+      },
+      "NSGA-III": {
+        "hv": "1.1698 +- 0.0026",
+        "igd_plus": "0.0228 +- 0.0014",
+        "frac_in_unsupported_region": 0.09238095238095238
+      },
+      "MOEA/D": {
+        "hv": "1.1745 +- 0.0002",
+        "igd_plus": "0.0223 +- 0.0002",
+        "frac_in_unsupported_region": 0.06952380952380952
+      },
+      "MOEA/D-WT": {
+        "hv": "1.1422 +- 0.0004",
+        "igd_plus": "0.0310 +- 0.0001",
+        "frac_in_unsupported_region": 0.04891862016519345
+      },
+      "MOEA/D-AWA": {
+        "hv": "1.1829 +- 0.0006",
+        "igd_plus": "0.0164 +- 0.0004",
+        "frac_in_unsupported_region": 0.03047619047619048
+      }
+    }
+  }
+}

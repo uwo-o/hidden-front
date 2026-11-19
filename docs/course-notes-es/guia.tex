@@ -1,0 +1,62 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands,es-nodecimaldot]{babel}
+\usepackage{lmodern}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black,citecolor=blue!50!black]{hyperref}
+\usepackage{microtype}
+
+\definecolor{clave}{HTML}{1F4E9C}
+\newtcolorbox{idea}[1][Idea clave]{enhanced,colback=clave!5,colframe=clave!70,
+  fonttitle=\bfseries\small,title={#1},boxrule=0.6pt,arc=2pt,left=6pt,right=6pt,top=4pt,bottom=4pt}
+
+\theoremstyle{definition}
+\newtheorem{definicion}{Definición}[section]
+\newtheorem{ejemplo}{Ejemplo}[section]
+\theoremstyle{plain}
+\newtheorem{proposicion}{Proposición}
+\newtheorem{lema}{Lema}[section]
+
+\newcommand{\etaC}{\eta_{\mathrm{C}}}
+\newcommand{\Pmax}{P_{\max}}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\code}[1]{\texttt{\small #1}}
+
+\setlength{\parskip}{0.35em}
+\setlist{itemsep=0.15em,topsep=0.3em}
+
+\title{\textbf{Guía de estudio}\\[0.3em]
+\large Motores de Otto cuánticos, fluctuaciones y la geometría del frente de Pareto\\[0.2em]
+\normalsize Qué hicimos, por qué funciona y cómo se conecta con termodinámica y mecánica estadística}
+\author{Hugo Campos}
+\date{Noviembre de 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent Esta guía explica, desde cero y con todas las derivaciones, el proyecto
+\code{hidden-front} (antes \code{otto-cuantico-awa}) y el borrador de paper que salió de él. Empieza por la física de un qubit
+en contacto con un baño, construye el ciclo de Otto en tiempo finito, calcula la estadística
+completa del trabajo con una matriz inclinada, introduce la producción de entropía y la relación de
+incertidumbre termodinámica (TUR), y llega al resultado central: la forma (convexa o de silla) del
+frente de Pareto depende de si se usa la eficiencia $\eta$ o la producción de entropía $\Sigma$ como
+objetivo, y eso decide qué motores puede encontrar una figura de mérito lineal. Al final hay un
+mapa del código, una sección honesta sobre qué es nuevo y qué no, y ejercicios resueltos.
+\end{abstract}
+
+\tableofcontents
+\clearpage
+
+\input{s1_fisica}
+\input{s2_resultado}
+\input{s3_resto}
+
+\end{document}

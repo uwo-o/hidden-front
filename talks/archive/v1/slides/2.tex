@@ -1,0 +1,99 @@
+\section{Modelo: el ciclo de Otto de un qubit}
+
+\begin{frame}{Calor y trabajo en dos niveles}
+    \[
+        \avg{E} = p\,\omega
+        \qquad\Longrightarrow\qquad
+        d\avg{E} = \underbrace{\omega\,dp}_{\text{calor}} + \underbrace{p\,d\omega}_{\text{trabajo}}
+    \]
+
+    \vspace{4pt}
+    \begin{itemize}
+        \item \textbf{Calor}: cambia la ocupación, la brecha fija (contacto con un baño).
+        \item \textbf{Trabajo}: cambia la brecha, la ocupación fija (cambio rápido de $\omega$).
+    \end{itemize}
+
+    \vspace{4pt}
+    Ocupación de equilibrio con un baño a temperatura $T$ (Boltzmann):
+    \[
+        a(\omega, T) = \frac{1}{1+e^{\omega/k_BT}}
+    \]
+
+    {\small $\hbar = k_B = 1$;\quad $T_h = 1$,\; $T_c = 0{,}5$ \;$\Rightarrow$\; $\eta_C = 0{,}5$.}
+\end{frame}
+
+\begin{frame}{El ciclo de Otto}
+    \begin{columns}[c]
+        \begin{column}{0.48\textwidth}
+            \begin{enumerate}
+                \setlength{\itemsep}{3pt}
+                \item Contacto caliente ($\omega_h$, $\tau_h$)
+                \item Bajar la brecha $\omega_h\to\omega_c$
+                \item Contacto frío ($\omega_c$, $\tau_c$)
+                \item Subir la brecha $\omega_c\to\omega_h$
+            \end{enumerate}
+            \vspace{6pt}
+            \[
+                W = (\omega_h-\omega_c)(p_1-p_2),\qquad Q_h = \omega_h(p_1-p_2)
+            \]
+            \[
+                \eta = \frac{W}{Q_h} = 1-\frac{\omega_c}{\omega_h}
+            \]
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \centering
+            \begin{tikzpicture}[scale=1.0, >=stealth]
+                \draw[->] (0,0) -- (4.6,0) node[below] {\small $\omega$};
+                \draw[->] (0,0) -- (0,3.6) node[left] {\small $p$};
+                \coordinate (A) at (3.6,0.9);
+                \coordinate (B) at (3.6,2.8);
+                \coordinate (C) at (1.4,2.8);
+                \coordinate (D) at (1.4,0.9);
+                \draw[very thick, usmRed, ->] (A) -- node[right] {\scriptsize 1: $Q_h$} (B);
+                \draw[very thick, usmBlue, ->] (B) -- node[above] {\scriptsize 2: trabajo} (C);
+                \draw[very thick, usmGreen, ->] (C) -- node[left] {\scriptsize 3: $Q_c$} (D);
+                \draw[very thick, usmBlue, ->] (D) -- node[below] {\scriptsize 4: trabajo} (A);
+                \draw[dashed, gray] (B) -- (0,2.8) node[left] {\small $p_1$};
+                \draw[dashed, gray] (A) -- (0,0.9) node[left] {\small $p_2$};
+                \draw[dashed, gray] (D) -- (1.4,0) node[below] {\small $\omega_c$};
+                \draw[dashed, gray] (A) -- (3.6,0) node[below] {\small $\omega_h$};
+                \foreach \P in {A,B,C,D} \fill (\P) circle (1.5pt);
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Tiempo finito}
+    Relajación hacia el equilibrio en cada contacto:
+    \[
+        p(\tau) = a + (p_0 - a)\,e^{-\gamma\tau}, \qquad x \equiv e^{-\gamma \tau}
+    \]
+    Ciclo límite y potencia:
+    \[
+        p_1 - p_2 = (a_h - a_c)\,\frac{(1-x_h)(1-x_c)}{1 - x_h x_c},
+        \qquad
+        \avg{P} = \frac{(\omega_h-\omega_c)(p_1-p_2)}{\tau_h + \tau_c + 2\tau_q}
+    \]
+    \begin{itemize}
+        \item Contacto corto: poco calor. Contacto largo: ciclo lento.
+        \item \textbf{Carnot solo con potencia cero.}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{El trabajo fluctúa}
+    Trabajo por ciclo, con $s\in\{0,1\}$ el estado del qubit:
+    \[
+        w = (\omega_h - \omega_c)(s_1 - s_2)
+    \]
+    Los ciclos forman una cadena de Markov. Matriz inclinada:
+    \[
+        \theta(\chi) = \ln \lambda_{\max}\!\big[M_h\, E(\chi)\, M_c\, E(-\chi)\big],
+        \qquad E(\chi) = \operatorname{diag}\!\big(1, e^{\chi(\omega_h-\omega_c)}\big)
+    \]
+    $\theta$ = generadora de cumulantes (análoga a una energía libre):
+    \[
+        \avg{P} = \frac{\theta'(0)}{\tau_{\text{ciclo}}},\qquad
+        \dP = \lim_{t\to\infty}\frac{\operatorname{Var}\,W(t)}{t} = \frac{\theta''(0)}{\tau_{\text{ciclo}}}
+    \]
+    {\small $\det$ no depende de $\chi$ $\Rightarrow$ forma cerrada. Validado con Monte Carlo.}
+\end{frame}

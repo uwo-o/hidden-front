@@ -1,0 +1,42 @@
+{
+ "TUR-like phi=2r/(1-r)": {
+  "ratio (a, r, c)": {
+   "unsupported": 0.85875,
+   "max_gap": 0.08109636427882744
+  },
+  "extensive (a, b, c)": {
+   "unsupported": 0.0,
+   "max_gap": 0.0
+  }
+ },
+ "linear phi=r": {
+  "ratio (a, r, c)": {
+   "unsupported": 0.92,
+   "max_gap": 0.090165584958469
+  },
+  "extensive (a, b, c)": {
+   "unsupported": 0.0,
+   "max_gap": 0.0
+  }
+ },
+ "exponential phi=exp(2r)": {
+  "ratio (a, r, c)": {
+   "unsupported": 0.900625,
+   "max_gap": 0.0809630694702074
+  },
+  "extensive (a, b, c)": {
+   "unsupported": 0.0,
+   "max_gap": 0.0
+  }
+ },
+ "concave chi phi=6-1/(2r^2)": {
+  "ratio (a, r, c)": {
+   "unsupported": 0.925625,
+   "max_gap": 0.1879705709186941
+  },
+  "extensive (a, b, c)": {
+   "unsupported": 0.784375,
+   "max_gap": 0.0257545482787932
+  }
+ }
+}

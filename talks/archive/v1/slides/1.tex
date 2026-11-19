@@ -1,0 +1,28 @@
+\section{Motivación}
+
+\begin{frame}{¿Un motor térmico con un solo átomo?}
+    \begin{columns}[c]
+        \begin{column}{0.58\textwidth}
+            \begin{itemize}
+                \setlength{\itemsep}{6pt}
+                \item Sustancia de trabajo: un \textbf{sistema de dos niveles}.
+                \item El ``volumen'' es la \textbf{brecha} $\omega$.
+                \item Calor y trabajo \textbf{fluctúan} de un ciclo a otro.
+                \item Se construye con \textbf{qubits superconductores}: brecha sintonizable con flujo magnético.
+            \end{itemize}
+
+            \vspace{10pt}
+            \textbf{Pregunta:} ¿cuáles son los mejores ciclos en potencia, eficiencia y estabilidad?
+        \end{column}
+        \begin{column}{0.38\textwidth}
+            \centering
+            \begin{tikzpicture}[>=stealth]
+                \draw[very thick, usmRed] (0,2.4) -- (3,2.4) node[right] {\small $\omega$};
+                \draw[very thick, usmBlue] (0,0) -- (3,0) node[right] {\small $0$};
+                \fill[usmYellow] (2.1,2.4) circle (5pt);
+                \draw[<->, thick] (0.8,0.15) -- node[left] {\small $\omega$} (0.8,2.25);
+                \node[below] at (1.5,-0.3) {\small qubit: $p$ = prob. excitado};
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+\end{frame}

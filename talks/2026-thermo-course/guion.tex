@@ -1,0 +1,118 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands,es-nodecimaldot]{babel}
+\usepackage{lmodern}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{xcolor,booktabs,tabularx,enumitem,amssymb}
+\usepackage[colorlinks=true,urlcolor=blue!50!black]{hyperref}
+\usepackage{titlesec}
+\definecolor{usmBlue}{HTML}{004B85}
+\titleformat{\subsection}{\large\bfseries\color{usmBlue}}{}{0pt}{}[\vspace{-0.4em}]
+\titlespacing*{\subsection}{0pt}{1.1em}{0.4em}
+\newcommand{\acc}[1]{\textcolor{gray}{\textit{[#1]}}}
+\newcommand{\slide}[2]{\subsection{#1\hfill\normalfont\small\textcolor{gray}{#2}}}
+\setlength{\parskip}{0.45em}\setlength{\parindent}{0pt}
+\setlist{itemsep=0.15em,topsep=0.3em}
+
+\begin{document}
+{\LARGE\bfseries\color{usmBlue} Guión: Un motor de un solo qubit}\\[0.3em]
+{\large Termodinámica y Mecánica Estadística — Hugo Campos — noviembre de 2026}
+
+\vspace{0.8em}
+\hrule
+\vspace{0.6em}
+
+\section*{Cómo usar este guión}
+
+Presentación versión 3, centrada en el motor: unos \textbf{13 minutos}, 12 slides más 4 de respaldo para preguntas. La optimización aparece solo como \emph{fun fact} en la slide 11.
+
+\textbf{La idea central, en una frase:} un solo qubit es un motor térmico completo, con calor, trabajo, pistón y segunda ley, y lo único realmente nuevo a esa escala es que fluctúa.
+
+\begin{itemize}
+\item El texto de cada slide es lo que dices, no lo que lees. Léelo dos veces y dilo con tus palabras.
+\item Lo que va \acc{entre corchetes} es una acción: señalar, hacer una pausa.
+\item El minuto a la derecha de cada slide es el tiempo acumulado al terminarla. Si en la slide 8 vas sobre 9:00, acorta la 9 y la 11.
+\item Las slides 4 a 7 son el corazón (primera ley, diccionario, ciclo y dispositivo): esas no se recortan.
+\end{itemize}
+
+\section*{Guión slide por slide}
+
+\slide{1. Título}{0:20}
+Buenos días. Hoy les voy a mostrar que un solo qubit, un sistema de dos niveles, puede funcionar como un motor térmico, y que toda la termodinámica que vimos en el curso aparece ahí, a la escala más pequeña posible.
+
+\slide{2. ¿Puede un solo qubit ser un motor?}{1:15}
+Un motor de auto tiene del orden de diez a la veintitrés moléculas, y por eso todo se promedia: presión, temperatura, trabajo. \acc{señalar el dibujo} La pregunta es qué pasa si reemplazamos todo ese gas por un solo sistema de dos niveles, un qubit superconductor. Vamos a responder tres preguntas: qué son el calor y el trabajo para un qubit, si se cumplen las leyes de la termodinámica, y qué cambia cuando el motor es tan pequeño.
+
+\slide{3. Un qubit en contacto con un baño}{2:20}
+Un qubit tiene dos estados: abajo, con energía cero, y arriba, con energía omega. A omega le llamamos la brecha, y en un qubit superconductor se controla desde afuera con un flujo magnético. \acc{señalar la fórmula} En contacto con un baño a temperatura $T$, la probabilidad de estar arriba es la de Gibbs. \acc{señalar el gráfico} Lo importante es que depende de omega sobre $T$: el baño caliente deja más población arriba aunque la brecha sea más grande. Esa diferencia es la que va a mover el motor.
+
+\slide{4. Primera ley a escala de un qubit}{3:40}
+La energía media del qubit es omega por $p$, la brecha por la probabilidad de estar arriba. \acc{señalar dE} Si la diferencio, aparecen dos términos, y esta es la clave de toda la presentación. \acc{izquierda} Si los niveles están quietos y cambia la probabilidad, el qubit absorbió o emitió un fotón del baño: eso es calor. \acc{derecha} Si la probabilidad está quieta y lo que se mueve es el nivel, la energía cambia sin intercambiar nada con el baño: eso es trabajo, y lo recibe el campo que controla la brecha.
+
+\slide{5. Diccionario: gas $\leftrightarrow$ qubit}{5:00}
+Con eso podemos traducir el motor clásico al qubit. \acc{recorrer la tabla} El volumen es la brecha. La presión es la población excitada: es lo que ``empuja'' cuando cambio la brecha. El trabajo $P\,dV$ pasa a ser $p\,d\omega$, y el calor $T\,dS$ pasa a ser $\omega\,dp$. El pistón es el campo magnético. \acc{señalar la derecha} ¿Por qué cambiar la brecha con $p$ fija es adiabático? Porque la entropía de un qubit depende solo de $p$: si $p$ no cambia, la entropía no cambia. \acc{pausa} Un detalle de signo: en el gas el trabajo sale cuando el volumen crece; en el qubit sale cuando la brecha se achica.
+
+\slide{6. El ciclo de Otto, fotón por fotón}{6:30}
+Veamos un ciclo fotón por fotón. \acc{paso 1} Con la brecha grande, omega $h$, el qubit absorbe un fotón del baño caliente y queda arriba. \acc{paso 2} Achico la brecha sin que el qubit cambie de estado: su energía baja de omega $h$ a omega $c$, y esa diferencia se entrega como trabajo. \acc{paso 3} En el baño frío emite un fotón de energía omega $c$ y baja. \acc{paso 4} Agrando la brecha de vuelta; como está abajo, no cuesta nada. \acc{señalar el balance} Entra omega $h$, sale omega $c$ al baño frío, y la diferencia es el trabajo. \acc{pausa} Y si en el paso 4 el qubit no alcanzó a bajar, hay que pagar esa diferencia: guarden esa idea para el final.
+
+\slide{7. ¿Cómo se construye y quién recibe el trabajo?}{7:50}
+Esto no es solo un dibujo. \acc{señalar el esquema} Karimi y Pekola propusieron este dispositivo en 2016: un qubit superconductor acoplado a dos circuitos resonantes, cada uno con una resistencia a distinta temperatura. Lo elegante es cómo se abren y cierran los baños: por resonancia. Cuando la brecha del qubit coincide con la frecuencia del resonador caliente, intercambia calor con esa resistencia; cuando coincide con el frío, con la otra; en medio, queda aislado. \acc{señalar el flujo} El flujo magnético externo hace de pistón y de cigüeñal: mueve la brecha y recibe el trabajo, que es electromagnético. Ellos lo plantearon como refrigerador; corrido al revés, es este motor.
+
+\slide{8. Eficiencia: la segunda ley aparece sola}{9:00}
+\acc{señalar la fórmula} La eficiencia es trabajo sobre calor absorbido: uno menos omega $c$ sobre omega $h$. Ahora, para que funcione como motor, el baño caliente tiene que dejar más población arriba que el frío. Escribiendo eso con Gibbs, sale que omega $c$ sobre omega $h$ tiene que ser mayor que $T_c$ sobre $T_h$, y eso es exactamente que la eficiencia sea menor que la de Carnot. \acc{pausa} Nadie impuso Carnot: salió solo de la estadística de Gibbs. \acc{señalar el gráfico} En promedio, el ciclo es este rectángulo, y su área es el trabajo, igual que en un diagrama $P$--$V$.
+
+\slide{9. Tiempo finito: potencia contra eficiencia}{9:50}
+Un motor real no puede esperar a que el qubit termalice. \acc{señalar $p(t)$} Con contactos cortos no alcanza a pasar calor; con contactos largos, cada ciclo dura una eternidad y la potencia se va a cero. Hay un óptimo en el medio, y a potencia máxima la eficiencia es 0,296, prácticamente Curzon--Ahlborn, 0,293. Otra vez, la termodinámica clásica aparece sola.
+
+\slide{10. Lo nuevo a esta escala: el motor fluctúa}{11:10}
+Hasta aquí todo se parece a un motor clásico. Lo nuevo es esto. \acc{señalar las trayectorias} Un qubit nunca está ``9\,\% excitado'': está arriba o abajo. Entonces el trabajo de cada ciclo es aleatorio, como adelantaba en el paso 4. Cada línea es el mismo motor corriendo de nuevo: todas suben en promedio, pero se abren como un abanico. \acc{señalar la fórmula} La relación de incertidumbre termodinámica dice que fluctuaciones por entropía producida es al menos dos veces la potencia al cuadrado. En palabras: la precisión cuesta disipación. Y los mejores ciclos de este motor están justo en ese límite.
+
+\slide{11. \emph{Fun fact}: optimizar el motor}{12:15}
+Un dato curioso que encontramos al buscar los mejores ciclos. \acc{señalar las superficies} Lo que se ve es cada superficie menos su plano tangente. Si describo los mejores ciclos con la eficiencia, forman una silla de montar, y una figura de mérito lineal, del tipo $a$ por potencia más $b$ por eficiencia, solo encuentra el 11\,\% de ellos. Si los describo con la entropía producida, forman una canaleta convexa, que toca su plano tangente a lo largo de una línea, y los encuentra todos. Es la misma idea que la construcción de Maxwell: lo que no es convexo, la transformada de Legendre no lo ve. Los ciclos los encontramos con algoritmos evolutivos multiobjetivo.
+
+\slide{12. Conclusiones}{13:00}
+Para cerrar, tres ideas. Uno: un qubit es un motor térmico completo; el calor es cambiar probabilidades, el trabajo es mover los niveles, y el campo de control es el pistón. Dos: la termodinámica clásica aparece sola: Carnot sale de Gibbs, y a potencia máxima aparece Curzon--Ahlborn. Tres: lo nuevo es que fluctúa, y la precisión cuesta disipación. Gracias.
+
+\newpage
+\section*{Preguntas probables}
+
+Casi todas se responden en dos frases; si piden detalle, salta a la slide de respaldo indicada (R1--R4).
+
+\vspace{0.3em}
+{\small
+\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{0.27\linewidth}X c}
+\toprule
+\textbf{Pregunta} & \textbf{Respuesta corta} & \textbf{Resp.}\\
+\midrule
+¿Qué tiene de cuántico? & Los niveles discretos del qubit. No usamos coherencias: la dinámica es una cadena de Markov. Con coherencias aparece la ``fricción cuántica'', que en general empeora el rendimiento. & --\\
+¿El trabajo es mecánico? ¿A dónde va la energía? & Es trabajo electromagnético: lo recibe el circuito que genera el flujo que fija la brecha. Es como un espín en un campo magnético: si bajas el campo con el espín excitado, el campo recibe energía. & --\\
+¿Por qué cambiar la brecha con $p$ fija es adiabático? & La entropía del qubit, $-p\ln p-(1-p)\ln(1-p)$, depende solo de $p$. & R1\\
+¿Por qué el baño caliente va con la brecha grande? & Para que haya motor, el baño caliente debe dejar más población arriba: $\omega_h/T_h < \omega_c/T_c$. En el diseño de Karimi y Pekola el resonador caliente también es el de mayor frecuencia. & --\\
+¿Cómo calculan las fluctuaciones? & Con una matriz que pesa cada salto por $e^{\chi w}$. Su mayor autovalor da una función generadora que juega el papel de $\ln Z$. Validado con Monte Carlo. & R2\\
+¿Por qué a veces la cota se supera un poco ($\xi>1$)? & La relación de incertidumbre se demuestra para motores estacionarios; uno cíclico puede violarla levemente. El máximo que vemos es 1,005. & --\\
+¿Qué es una figura de mérito? & Un solo número que resume los objetivos con pesos, como la nota final de un ramo. Ninguna ponderación elige a los buenos compromisos de la parte no convexa. & R3\\
+¿Y cerca del equilibrio? & En respuesta lineal potencia y eficiencia van amarradas: los mejores ciclos forman una curva y la figura de mérito lineal los encuentra todos. & R4\\
+\bottomrule
+\end{tabularx}
+}
+
+\section*{Frases a evitar}
+\begin{itemize}
+\item ``Trabajo mecánico'' o ``vector de Poynting''. Di: \emph{el trabajo lo recibe el campo que controla la brecha}.
+\item ``La energía se libera al cambiar de estado''. Cambiar de estado es calor; el trabajo sale al mover la brecha.
+\item ``El motor es cuántico'' sin matiz. Di: \emph{un qubit, tratado sin coherencias}.
+\item ``Construimos el motor''. El dispositivo es una propuesta de Karimi y Pekola; nosotros lo modelamos y calculamos sus fluctuaciones.
+\item No expliques la matriz inclinada ni los algoritmos en la parte principal: van al respaldo.
+\end{itemize}
+
+\section*{Chequeo antes de presentar}
+\begin{itemize}[label=$\square$]
+\item Ensayar con cronómetro una vez completa (meta: 13 minutos).
+\item Practicar en voz alta las slides 4 a 7 hasta decirlas sin mirar.
+\item Revisar que el PDF se vea bien en el proyector (los dibujos de las slides 6 y 7 son pequeños).
+\item Tener a mano los números clave: 0,296 contra 0,293; $\xi \approx 1$; 11\,\% en el \emph{fun fact}.
+\end{itemize}
+
+\end{document}

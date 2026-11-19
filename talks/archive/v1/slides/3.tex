@@ -1,0 +1,44 @@
+\section{Optimización multiobjetivo}
+
+\begin{frame}{Tres objetivos en conflicto}
+    Variables:\quad $\mathbf{x} = \big(\omega_h,\ \omega_c/\omega_h,\ \tau_h,\ \tau_c\big)$
+
+    \vspace{6pt}
+    Objetivos:
+    \[
+        \max\ \avg{P},\qquad \max\ \eta,\qquad \min\ \dP
+    \]
+
+    \vspace{2pt}
+    \textbf{Frente de Pareto}: ciclos que no se pueden mejorar en un objetivo sin empeorar otro.
+
+    \vspace{8pt}
+    Relación de incertidumbre termodinámica (Pietzonka y Seifert, 2018):
+    \[
+        \eta \;\leq\; \frac{\eta_C}{1 + 2 T_c \avg{P}/\dP}
+        \qquad\Longleftrightarrow\qquad
+        \xi \equiv \frac{2T_c\,\avg{P}\,\eta}{\dP\,(\eta_C - \eta)} \leq 1
+    \]
+\end{frame}
+
+\begin{frame}{Algoritmos}
+    \begin{tabular}{@{}ll@{}}
+        \toprule
+        \textbf{NSGA-II} & dominancia + distancia de aglomeración \\
+        \textbf{NSGA-III} & dominancia + puntos de referencia \\
+        \textbf{MOEA/D} & 105 subproblemas escalares (Tchebycheff) \\
+        \textbf{MOEA/D-AWA} & MOEA/D + ajuste adaptativo de pesos (Qi et al., 2014) \\
+        Suma ponderada & $\min \sum_i w_i \hat f_i$ para 105 pesos (línea base) \\
+        \bottomrule
+    \end{tabular}
+
+    \vspace{10pt}
+    Tchebycheff normalizado:
+    \[
+        g(\mathbf{x}\mid\boldsymbol\lambda) = \max_i\ \lambda_i\,\frac{f_i(\mathbf{x}) - z_i^*}{z_i^{\text{nad}} - z_i^*}
+    \]
+    AWA: mueve pesos de las zonas sobrepobladas a las vacías del frente.
+
+    \vspace{6pt}
+    {\small $N=105$, 400 generaciones, 10 semillas. Métricas: hipervolumen (HV) e IGD$^+$.}
+\end{frame}

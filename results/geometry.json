@@ -1,0 +1,20 @@
+{
+  "symbolic": {
+    "hess_eta": "Matrix([[0, 2*T_c*eta/(-eta + eta_C)**2 + 2*T_c/(-eta + eta_C)], [2*T_c*eta/(-eta + eta_C)**2 + 2*T_c/(-eta + eta_C), 4*P*T_c*eta/(-eta + eta_C)**3 + 4*P*T_c/(-eta + eta_C)**2]])",
+    "det_eta": "-4*T_c**2*eta_C**2/(eta**4 - 4*eta**3*eta_C + 6*eta**2*eta_C**2 - 4*eta*eta_C**3 + eta_C**4)",
+    "hess_sigma": "Matrix([[4/Sigma, -4*P/Sigma**2], [-4*P/Sigma**2, 4*P**2/Sigma**3]])",
+    "det_sigma": "0",
+    "trace_sigma": "4*P**2/Sigma**3 + 4/Sigma"
+  },
+  "numeric": {
+    "n": 3600,
+    "eta": {
+      "frac_unsupported": 0.8611111111111112,
+      "max_gap": 0.08534083428400598
+    },
+    "sigma": {
+      "frac_unsupported": 0.0,
+      "max_gap": 0.0
+    }
+  }
+}
