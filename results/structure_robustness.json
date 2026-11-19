@@ -1,0 +1,181 @@
+{
+ "kappa": {
+  "0": {
+   "ratio": {
+    "unsupported": 0.86,
+    "max_gap": 0.0822058079182047,
+    "ceiling_gap": 0.09488332050595373,
+    "n_front": 1600
+   },
+   "extensive": {
+    "unsupported": 0.0,
+    "max_gap": 0.0,
+    "ceiling_gap": 0.0,
+    "n_front": 1600
+   }
+  },
+  "-0.75": {
+   "ratio": {
+    "unsupported": 0.83,
+    "max_gap": 0.03515427695646012,
+    "ceiling_gap": 0.014277723507680846,
+    "n_front": 1600
+   },
+   "extensive": {
+    "unsupported": 0.779375,
+    "max_gap": 0.016855283393856498,
+    "ceiling_gap": 0.01945790230533102,
+    "n_front": 1600
+   }
+  },
+  "-0.5": {
+   "ratio": {
+    "unsupported": 0.86125,
+    "max_gap": 0.06333761196457974,
+    "ceiling_gap": 0.033210155273212257,
+    "n_front": 1600
+   },
+   "extensive": {
+    "unsupported": 0.751875,
+    "max_gap": 0.012908347209836264,
+    "ceiling_gap": 0.02848279404042862,
+    "n_front": 1600
+   }
+  },
+  "-0.25": {
+   "ratio": {
+    "unsupported": 0.864375,
+    "max_gap": 0.08038535976963981,
+    "ceiling_gap": 0.0590010520471665,
+    "n_front": 1600
+   },
+   "extensive": {
+    "unsupported": 0.665,
+    "max_gap": 0.007464441003015174,
+    "ceiling_gap": 0.03588964070117271,
+    "n_front": 1600
+   }
+  },
+  "-0.1": {
+   "ratio": {
+    "unsupported": 0.863125,
+    "max_gap": 0.08265752238618479,
+    "ceiling_gap": 0.07909728783968252,
+    "n_front": 1600
+   },
+   "extensive": {
+    "unsupported": 0.46,
+    "max_gap": 0.003188509582533597,
+    "ceiling_gap": 0.02500163329583051,
+    "n_front": 1600
+   }
+  },
+  "0.1": {
+   "ratio": {
+    "unsupported": 0.8575,
+    "max_gap": 0.08069155016384366,
+    "ceiling_gap": 0.1133402332711334,
+    "n_front": 1600
+   },
+   "extensive": {
+    "unsupported": 0.0,
+    "max_gap": 0.0,
+    "ceiling_gap": 0.0,
+    "n_front": 1600
+   }
+  },
+  "0.25": {
+   "ratio": {
+    "unsupported": 0.855,
+    "max_gap": 0.07574052652595958,
+    "ceiling_gap": 0.13793310568649741,
+    "n_front": 1600
+   },
+   "extensive": {
+    "unsupported": 0.0,
+    "max_gap": 0.0,
+    "ceiling_gap": 0.0,
+    "n_front": 1600
+   }
+  },
+  "0.5": {
+   "ratio": {
+    "unsupported": 0.844375,
+    "max_gap": 0.06273237819372386,
+    "ceiling_gap": 0.1591074586692516,
+    "n_front": 1600
+   },
+   "extensive": {
+    "unsupported": 0.0,
+    "max_gap": 0.0,
+    "ceiling_gap": 0.0,
+    "n_front": 1600
+   }
+  },
+  "1": {
+   "ratio": {
+    "unsupported": 0.80875,
+    "max_gap": 0.03922922405531988,
+    "ceiling_gap": 0.1569565526855824,
+    "n_front": 1600
+   },
+   "extensive": {
+    "unsupported": 0.0,
+    "max_gap": 0.0,
+    "ceiling_gap": 0.0,
+    "n_front": 1600
+   }
+  },
+  "2": {
+   "ratio": {
+    "unsupported": 0.581875,
+    "max_gap": 0.016238827434189237,
+    "ceiling_gap": 0.07103672315567236,
+    "n_front": 1600
+   },
+   "extensive": {
+    "unsupported": 0.0,
+    "max_gap": 0.0,
+    "ceiling_gap": 0.0,
+    "n_front": 1600
+   }
+  },
+  "4": {
+   "ratio": {
+    "unsupported": 0.2625,
+    "max_gap": 0.005646974700089151,
+    "ceiling_gap": 0.01700566326404546,
+    "n_front": 1600
+   },
+   "extensive": {
+    "unsupported": 0.0,
+    "max_gap": 0.0,
+    "ceiling_gap": 0.0,
+    "n_front": 1600
+   }
+  }
+ },
+ "resolution": {
+  "400": {
+   "0.01": 0.6563307493540051,
+   "0.001": 0.9457364341085271,
+   "0.0001": 0.9948320413436692,
+   "1e-05": 0.9974160206718347,
+   "median_gap": 0.019604813245779673
+  },
+  "1600": {
+   "0.01": 0.6563307493540051,
+   "0.001": 0.9457364341085271,
+   "0.0001": 0.9974160206718347,
+   "1e-05": 1.0,
+   "median_gap": 0.019844429008002477
+  },
+  "6400": {
+   "0.01": 0.6589147286821705,
+   "0.001": 0.9457364341085271,
+   "0.0001": 0.9974160206718347,
+   "1e-05": 1.0,
+   "median_gap": 0.019938195025778642
+  }
+ }
+}

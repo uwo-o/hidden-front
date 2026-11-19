@@ -4,7 +4,8 @@
 
 This repository contains the code, data and manuscripts of a study on how the choice of objectives
 decides whether a weighted sum (a linear figure of merit) can reach a Pareto front. The case study is a
-finite-time quantum Otto engine whose optimal cycles saturate a thermodynamic uncertainty relation.
+finite-time quantum Otto engine whose optimal cycles saturate a thermodynamic uncertainty relation, and
+the sizing of a seawater reverse-osmosis plant, where the structure comes from a free scale variable.
 
 ## Main result
 
@@ -17,19 +18,26 @@ Many engineering and physics problems mix a **ratio** objective (efficiency, yie
   **same solutions** form a perspective function, which is convex exactly when a one-dimensional profile
   is convex (Theorem 2). The convex case is flat along rays, so weighted-sum optima are not unique and
   weighted-sum decomposition crowds its solutions (Corollary 1).
+- The structure arises from any **free scale** (number of parallel units, area, capacity): a weighted
+  sum that rewards a ratio then returns only the smallest or the largest admissible design (Theorem 3).
 
 For the single-qubit Otto engine:
 
 | | Efficiency formulation $(P,\eta,\Delta P)$ | Entropy formulation $(P,\Delta P,\Sigma)$ |
 |---|---|---|
-| Front unreachable by any weighted sum | 91% | 4% |
-| HV of the reference front / ceiling of any weighted sum | 1.0810 / **0.9950** | 1.2114 / 1.2113 |
-| MOEA/D with a weighted sum: reachability + distribution loss | **0.086** + 0.028 | 0.0001 + **0.089** |
+| Front unreachable by any weighted sum | 92% | 2% |
+| HV of the reference front / ceiling of any weighted sum | 1.0805 / **0.9946** | 1.2115 / 1.2115 |
+| MOEA/D with a weighted sum: reachability + distribution loss | **0.086** + 0.028 | 0.000 + **0.090** |
 | Median loss of the best cycle a weighted-sum designer can reach | 14% | 0% |
 
-Six of the seven multi-objective evolutionary algorithms tested exceed the hypervolume ceiling of any
-weighted-sum method in the efficiency formulation. A 17-variable piecewise-control variant that breaks
-the structure has a nearly convex front.
+Every algorithm tested other than the weighted sum and the localized weighted sum with wide cones (SMS-EMOA, MOEA/D,
+MOEA/D-AWA, NSGA-II/III, RVEA, PBI, L2, L4) exceeds the hypervolume ceiling of any weighted-sum method in
+at least 97% of its runs in the efficiency formulation. The losses persist with five times the budget
+and twice the population.
+
+For the reverse-osmosis plant (production, recovery, pump power, number of vessels), recovery hides 44%
+of the front, and weighted-sum decomposition returns only plants with the minimum or maximum number of
+vessels in both formulations, losing two thirds of the hypervolume; PBI performs best.
 
 ## Installation
 
@@ -51,8 +59,9 @@ pytest
 |---|---|
 | `otto` | Single-qubit Otto engine: limit cycle, power, efficiency, entropy production and exact power fluctuations from the tilted transfer matrix; Monte Carlo validation |
 | `piecewise` | Quantum-dot engine of Erdman et al. (2023) with N-step piecewise-constant control and exact statistics |
-| `problems` | pymoo problems for both engines in the ratio (`objectives="eta"`) and extensive (`objectives="sigma"`) formulations |
-| `moead` | MOEA/D (normalized Tchebycheff), MOEA/D-AWA (Qi et al. 2014) and MOEA/D with a linear weighted sum |
+| `desalination` | Reverse-osmosis plant: closed-form one-dimensional module model, pump power with energy recovery |
+| `problems` | pymoo problems: both engines (`objectives="eta"` or `"sigma"`) and the RO plant (`objectives="recovery"` or `"brine"`) |
+| `moead` | MOEA/D with normalized Tchebycheff, weighted sum, PBI, L_p and localized weighted sum; MOEA/D-AWA (Qi et al. 2014) |
 | `support` | Linear-programming support test: is a Pareto point reachable by some weighted sum? |
 
 ```python
@@ -86,6 +95,8 @@ single-threaded.
 | Analysis of the main experiment | `python scripts/analyze_experiment.py --model otto` and `--model piecewise` | `results/{ot,pw}_summary.{json,md}`, figures 11-12, 15-16 | ~3 min |
 | Theory checks | `python scripts/synthetic_fronts.py`, `python scripts/support_geometry.py`, `python scripts/linear_response.py`, `python scripts/gap_sensitivity.py` | `results/*.json`, figures 10, 14 | ~5 min |
 | Physical cost of a linear figure of merit | `python scripts/physical_cost.py` | `results/physical_cost.{json,npz}`, figure 13 | ~3 min |
+| Revision: RO plant, extra scalarizations, budget/population sensitivity, extended analysis | `JOBS=24 bash scripts/reproduce_revision.sh` | `results/ro_*`, `results/ot_*_{scal,long,bigpop}_runs.json`, `results/{ot,ro}_extended.{json,md}` | ~40 min |
+| Synthetic robustness (tolerance, resolution, kappa family) | `python scripts/structure_robustness.py` | `results/structure_robustness.json`, figure 17 | ~3 min |
 | Paper figures | `python paper/make_figures.py`, `python paper/make_saddle_figure.py` | `paper/figs/` | ~1 min |
 
 The raw runs used in the paper are included in `results/`, so every analysis can be rerun without
@@ -103,6 +114,7 @@ figures/           figures produced by the scripts
 paper/             manuscript for an evolutionary-computation venue (IEEEtran) and its figures
 paper/physics-draft/   earlier physics-oriented draft (REVTeX)
 docs/proposition.md    technical note: statements, proofs sketch and evidence
+docs/review/           self-review (Reviewer 2) and response for the first revision
 docs/course-notes-es/  study guide for the thermodynamics course (Spanish)
 talks/             course presentation and script (Spanish); earlier versions in talks/archive/
 ```
@@ -138,6 +150,7 @@ orders of magnitude.
 | MOEA/D-WT | normalized Tchebycheff with WS-transformed weights (ablation, baseline runs only) |
 | MOEA/D-AWA | MOEA/D-WT plus adaptive weight adjustment |
 | MOEA/D-WS | linear weighted-sum scalarization (the baseline of the paper) |
+| MOEA/D-PBI, -L2, -L4, -LWS | PBI (theta = 5), L_p (p = 2, 4) and localized weighted sum scalarizations |
 
 ## Citation
 
@@ -145,4 +158,4 @@ The manuscript is in preparation (`paper/main.tex`). Until it is published, plea
 
 ## License
 
-The code is released under the [MIT License](LICENSE).
+Not yet specified.

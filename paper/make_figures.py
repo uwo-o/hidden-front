@@ -128,10 +128,81 @@ def fig_linear_response():
     plt.close(fig)
 
 
+def fig_hv_extended(prefix, out, labels):
+    """Horizontal HV boxplots of all algorithms (main and extra scalarizations) for both formulations."""
+    path = DATA / f"{prefix}_extended.json"
+    if not path.exists():
+        print(f"skip {out}: run scripts/analyze_extended.py first")
+        return
+    summ = json.loads(path.read_text())
+    runs = json.loads((DATA / f"{prefix}_extended_runs.json").read_text())
+    fig, axs = plt.subplots(1, len(summ), figsize=(COL2, 3.0), constrained_layout=True)
+    for ax, res, rr, lab in zip(np.atleast_1d(axs), summ, runs, labels):
+        main = rr["runs"].get("main", []) + rr["runs"].get("scal", [])
+        algs = [a for a in res["tables"]["main"]]
+        algs = sorted(algs, key=lambda a: -np.median([r["hv"] for r in main if r["algorithm"] == a]))
+        data = [[r["hv"] for r in main if r["algorithm"] == a] for a in algs]
+        bp = ax.boxplot(data, vert=False, widths=0.55, patch_artist=True, showfliers=True,
+                        medianprops=dict(color=INK, lw=1), flierprops=dict(ms=2.5, mec=MUTED),
+                        whiskerprops=dict(color=MUTED), capprops=dict(color=MUTED))
+        for b, a in zip(bp["boxes"], algs):
+            b.set_facecolor(UNSUP if a == "MOEA/D-WS" else ("#f2d3b0" if a in ("MOEA/D-L2", "MOEA/D-L4", "MOEA/D-LWS", "MOEA/D-PBI") else "#c9d6ea"))
+            b.set_edgecolor(MUTED)
+        ax.axvline(res["hv_reference"], c=INK, ls=":", lw=0.9, label="reference front")
+        ax.axvline(res["hv_ceiling"], c=UNSUP, ls="--", lw=0.9, label="any weighted sum (ceiling)")
+        ax.set_yticks(range(1, len(algs) + 1), algs, fontsize=7)
+        ax.invert_yaxis()
+        ax.set_xlabel("hypervolume")
+        ax.set_title(lab)
+    h, l = np.atleast_1d(axs)[0].get_legend_handles_labels()
+    fig.legend(h, l, frameon=False, loc="lower center", ncol=2, bbox_to_anchor=(0.5, 1.0))
+    fig.savefig(OUT / out)
+    plt.close(fig)
+
+
+def fig_ro_scale():
+    """Number of vessels n of the final solutions of MOEA/D-WS and NSGA-II in both RO formulations."""
+    path = DATA / "ro_extended_runs.json"
+    if not path.exists():
+        print("skip fig8_ro_scale: run scripts/analyze_extended.py --model ro first")
+        return
+    runs = json.loads(path.read_text())
+    fig, axs = plt.subplots(1, 2, figsize=(COL2, 2.3), sharey=True, constrained_layout=True)
+    bins = np.linspace(1, 100, 34)
+    for ax, rr, lab in zip(axs, runs, ["ratio $(Q, r, W, n)$", "extensive $(Q, B, W, n)$"]):
+        for a, col in (("NSGA-II", "#c9d6ea"), ("MOEA/D-WS", UNSUP)):
+            n = np.array(rr["scale_samples"].get(a, []))
+            if len(n):
+                ax.hist(n, bins=bins, density=True, color=col, alpha=0.85 if a == "MOEA/D-WS" else 1.0,
+                        label=a, edgecolor="white", lw=0.3)
+        ax.set_xlabel("number of vessels $n$")
+        ax.set_title(lab)
+    axs[0].set_ylabel("density of final solutions")
+    axs[0].legend(frameon=False)
+    fig.savefig(OUT / "fig8_ro_scale.pdf")
+    plt.close(fig)
+
+
+def fig_robustness():
+    path = DATA / "structure_robustness.json"
+    if not path.exists():
+        print("skip fig6_robustness: run scripts/structure_robustness.py first")
+        return
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("sr", ROOT / "scripts" / "structure_robustness.py")
+    sr = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(sr)
+    sr.figure(json.loads(path.read_text()), OUT / "fig6_robustness.pdf")
+
+
 if __name__ == "__main__":
     print("geometry:", fig_geometry(), flush=True)
     fig_cost()
     fig_hv("ot_hv_runs.json", "fig3_hv_otto.pdf", "Otto engine, objectives {}")
     fig_linear_response()
     fig_hv("pw_hv_runs.json", "fig5_hv_piecewise.pdf", "Piecewise control, objectives {}")
+    fig_robustness()
+    fig_hv_extended("ot", "fig3b_hv_otto_all.pdf", [r"Otto, ratio $(P,\eta,\Delta P)$", r"Otto, extensive $(P,\Delta P,\Sigma)$"])
+    fig_hv_extended("ro", "fig7_hv_ro.pdf", [r"RO, ratio $(Q,r,W,n)$", r"RO, extensive $(Q,B,W,n)$"])
+    fig_ro_scale()
     print("ok")

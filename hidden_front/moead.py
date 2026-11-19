@@ -6,6 +6,16 @@ A single code base with four modes:
     MOEAD(problem, ws=True, awa=True)     -> MOEA/D-AWA
     MOEAD(problem, scalarization="ws")    -> MOEA/D with a linear weighted sum (MOEA/D-WS)
 
+Further scalarizations (all on normalized objectives f_hat = (f - z*) / (z_nad - z*)):
+    scalarization="lp", p=...  -> L_p scalarization (sum_i (lam_i f_hat_i)^p)^(1/p) (Giagkiozis & Fleming 2015);
+                                  p = 1 is the weighted sum, p -> inf approaches Tchebycheff
+    scalarization="pbi", theta=5 -> penalty-based boundary intersection (Zhang & Li 2007)
+    scalarization="lws"        -> localized weighted sum (Wang et al., IEEE TEVC 22(1), 2018): the weighted
+                                  sum is used only inside a hypercone around lam_i whose half-angle is the
+                                  mean angle between lam_i and its m nearest weight vectors; outside the cone
+                                  the value is a large constant plus the angle, so that solutions closer to
+                                  the cone are preferred
+
 Details of MOEA/D-AWA that the original paper leaves open, fixed here explicitly:
   * Sparsity: SL(ind, pop) = prod_{i=1}^{m} d_i, with d_i the Euclidean distance to
     the i-th nearest neighbour (k = m), as in reference implementations.
@@ -132,12 +142,14 @@ class MOEAD:
     def __init__(self, problem, n_partitions=13, max_gen=500, ws=False, awa=False,
                  T_frac=0.1, delta=0.9, nr=2, eta_c=20.0, eta_m=20.0,
                  rate_evol=0.8, wag=20, rate_update_weight=0.05, ep_factor=1.5,
-                 normalize=True, hist_every=10, seed=0, scalarization="tch"):
-        if scalarization not in ("tch", "ws"):
-            raise ValueError("scalarization must be 'tch' or 'ws'")
-        if scalarization == "ws" and (ws or awa):
-            raise ValueError("the linear weighted sum is used without WS transformation or AWA")
+                 normalize=True, hist_every=10, seed=0, scalarization="tch", p=2.0, theta=5.0, cone_factor=1.0):
+        if scalarization not in ("tch", "ws", "lp", "pbi", "lws"):
+            raise ValueError("scalarization must be one of 'tch', 'ws', 'lp', 'pbi', 'lws'")
+        if scalarization != "tch" and (ws or awa):
+            raise ValueError("WS transformation and AWA are only used with the Tchebycheff scalarization")
         self.scalarization = scalarization
+        self.p, self.theta = float(p), float(theta)
+        self.cone_factor = float(cone_factor)
         if awa and not ws:
             raise ValueError("AWA requires WS-transformed weights (ws=True).")
         self.problem = problem
@@ -175,12 +187,37 @@ class MOEAD:
     def _norm(self, F):
         return (F - self.z) / self._scale()
 
-    def _g(self, F, lam):
-        """Normalized Tchebycheff, max_i lam_i f_hat_i, or the linear weighted sum
-        sum_i lam_i f_hat_i (scalarization="ws", baseline). F (..., m), lam (..., m)."""
-        if self.scalarization == "ws":
-            return np.sum(lam * self._norm(F), axis=-1)
-        return np.max(lam * self._norm(F), axis=-1)
+    def _g(self, F, lam, cone=None):
+        """Scalarizing function on normalized objectives. F (..., m), lam (..., m).
+        cone: half-angles of the subproblems (only for "lws"), broadcast like lam[..., 0]."""
+        fh = self._norm(F)
+        sc = self.scalarization
+        if sc == "ws":
+            return np.sum(lam * fh, axis=-1)
+        if sc == "lp":
+            return np.sum((lam * np.maximum(fh, 0.0)) ** self.p, axis=-1) ** (1.0 / self.p)
+        if sc == "pbi":
+            u = lam / np.linalg.norm(lam, axis=-1, keepdims=True)
+            d1 = np.sum(fh * u, axis=-1)
+            d2 = np.linalg.norm(fh - d1[..., None] * u, axis=-1)
+            return d1 + self.theta * d2
+        if sc == "lws":
+            u = lam / np.linalg.norm(lam, axis=-1, keepdims=True)
+            fp = np.maximum(fh, 0.0)
+            nf = np.linalg.norm(fp, axis=-1)
+            cosang = np.sum(fp * u, axis=-1) / np.where(nf > 1e-12, nf, 1e-12)
+            ang = np.arccos(np.clip(cosang, -1.0, 1.0))
+            inside = (ang <= cone) | (nf <= 1e-12)
+            return np.where(inside, np.sum(lam * fh, axis=-1), 1e6 + ang)
+        return np.max(lam * fh, axis=-1)
+
+    def _cones(self):
+        """LWS half-angles: mean angle between each weight vector and its m nearest neighbours."""
+        u = self.lam / np.linalg.norm(self.lam, axis=1, keepdims=True)
+        A = np.arccos(np.clip(u @ u.T, -1.0, 1.0))
+        np.fill_diagonal(A, np.inf)
+        k = min(self.m, len(u) - 1)
+        self.cone = self.cone_factor * np.mean(np.sort(A, axis=1)[:, :k], axis=1)
 
     def _directions(self):
         """Solution-mapping vectors (used to build neighbourhoods)."""
@@ -255,6 +292,9 @@ class MOEAD:
         n_var = len(self.xl)
         self.lam = ws_transform(self.W0) if self.ws else np.maximum(self.W0, EPS)
         self._neighborhoods()
+        self.cone = None
+        if self.scalarization == "lws":
+            self._cones()
         self.X = self.xl + rng.random((self.N, n_var)) * (self.xu - self.xl)
         self.F = self._eval(self.X)
         self.z = self.F.min(0)
@@ -282,8 +322,9 @@ class MOEAD:
                 children_F.append(fc)
                 # neighbour update (at most nr replacements)
                 cand = rng.permutation(pool)
-                g_child = self._g(fc[None, :], self.lam[cand])
-                g_cur = self._g(self.F[cand], self.lam[cand])
+                cone = None if self.cone is None else self.cone[cand]
+                g_child = self._g(fc[None, :], self.lam[cand], cone)
+                g_cur = self._g(self.F[cand], self.lam[cand], cone)
                 replaced = 0
                 for j, gc, gj in zip(cand, g_child, g_cur):
                     if gc <= gj:

@@ -36,3 +36,15 @@ def test_weighted_sum_scalarization_runs():
     pb = get_problem("dtlz2", n_var=12, n_obj=3)
     alg = MOEAD(pb, n_partitions=6, max_gen=20, scalarization="ws", seed=0).run()
     assert len(alg.result_F) > 0
+
+
+def test_lp_scalarization_tends_to_tchebycheff():
+    import numpy as np
+    from hidden_front.moead import MOEAD
+    from hidden_front.problems import OttoProblem
+    a = MOEAD(OttoProblem(), scalarization="lp", p=200.0)
+    a.z, a.nadir = np.zeros(3), np.ones(3)
+    F = np.array([[0.2, 0.5, 0.1], [0.4, 0.1, 0.3]])
+    lam = np.array([0.3, 0.3, 0.4])
+    tch = np.max(lam * F, axis=-1)
+    assert np.allclose(a._g(F, lam), tch, rtol=0.05)

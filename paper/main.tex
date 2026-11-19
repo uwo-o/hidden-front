@@ -32,19 +32,23 @@ and a Quantum Heat Engine Case Study}
 Weighted-sum scalarization reaches only the supported part of a Pareto front, so its success depends
 on the front's geometry. In real-world problems that geometry is not fixed by the solutions alone:
 it depends on which of several equivalent objectives the modeler writes down. We study a structure
-common in engineering, where one objective is a \emph{ratio} (an efficiency or yield) and a cost
-scales in proportion to an \emph{extensive} output at fixed ratio. We prove that such
-product-structured fronts are saddle surfaces, with no supported interior point, and that replacing
-the ratio by an extensive cost turns the same set of solutions into the graph of a perspective
-function, which is convex exactly when a one-dimensional profile is convex. The convex case is
-degenerate along rays, which makes weighted-sum optima non-unique. We propose two diagnostics: a
-linear-programming support test and a hypervolume ceiling that splits the loss of weighted-sum
-methods into a reachability part and a distribution part. A finite-time quantum Otto engine, whose
-Pareto front saturates a thermodynamic uncertainty relation, realizes the structure exactly. With
-efficiency as an objective, 91\% of its front is unsupported and six of seven multi-objective
-evolutionary algorithms exceed the hypervolume ceiling of any weighted-sum method; with entropy
-production, the ceiling coincides with the reference front and the weighted-sum loss is due only to
-the degeneracy. A 17-variable variant that breaks the structure has a nearly convex front.
+common in engineering, where one objective is a \emph{ratio} (an efficiency, a yield, a recovery) and a
+cost scales in proportion to an \emph{extensive} output at fixed ratio. We prove that such fronts are
+saddle surfaces with no supported interior point, not even locally, and that replacing the ratio by an
+extensive cost turns the same solutions into the graph of a perspective function, which is convex
+exactly when a one-dimensional profile is convex but is degenerate along rays. The structure arises
+from any free scale variable: in a sizing problem, a weighted sum that rewards a ratio returns only the
+smallest or the largest admissible design. We propose a linear-programming support test and a
+hypervolume ceiling that splits the loss of weighted-sum methods into a reachability part and a
+distribution part, and we study eleven algorithms on two real-world problems. On a finite-time quantum
+Otto engine, whose front saturates a thermodynamic uncertainty relation, 92\% of the front is
+unsupported with efficiency as an objective, and every method other than the weighted sum and the localized
+weighted sum with wide cones exceeds the ceiling of any weighted sum in at least 97\% of its runs; with entropy production the ceiling coincides with
+the reference front. On the sizing of a seawater reverse-osmosis plant, weighted-sum decomposition
+returns only plants of minimal or maximal size in both formulations and loses two thirds of the
+hypervolume, while PBI performs best. The losses persist with five times the budget and twice the
+population, and a controlled family of fronts shows how they degrade when the structure holds only
+approximately.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -81,22 +85,28 @@ structure we study arises when a third objective, typically a cost or a variabil
 to the extensive output at fixed ratio. Our contributions are:
 \begin{enumerate}
 \item \emph{Theory} (Sec.~\ref{sec:theory}). Product-structured fronts written with a ratio
-objective are saddle surfaces with no supported interior point (Theorem~\ref{thm:saddle}). Rewritten
-with an extensive objective, the same solutions form the graph of a perspective function, which is
-convex if and only if a one-dimensional profile is convex (Theorem~\ref{thm:perspective}); the convex
-case is degenerate along rays (Corollary~\ref{cor:degenerate}). Lower-dimensional (degenerate) fronts
-escape the first result.
+objective are saddle surfaces with no supported interior point, not even locally
+(Theorem~\ref{thm:saddle}). Rewritten with an extensive objective, the same solutions form the graph of
+a perspective function, which is convex if and only if a one-dimensional profile is convex
+(Theorem~\ref{thm:perspective}); the convex case is degenerate along rays
+(Corollary~\ref{cor:degenerate}). We show that the structure arises from any free scale variable, for
+any number of objectives: a weighted sum that rewards a ratio then returns only designs at the bounds
+of the scale (Theorem~\ref{thm:scale}, Corollary~\ref{cor:scale}).
 \item \emph{Diagnostics} (Sec.~\ref{sec:diagnostics}). A linear-programming support test, a
 hypervolume (HV) ceiling of all weighted-sum methods that decomposes their HV loss into reachability
-and distribution, and a multiplicative $\varepsilon$ loss of the best reachable solution.
-\item \emph{A real-world case study} (Sec.~\ref{sec:case}). A finite-time quantum Otto engine whose
-Pareto front saturates a thermodynamic uncertainty relation and therefore realizes the product
-structure exactly, in two equivalent formulations. Its evaluation is exact and cheap, and its front
-shape is analytically known, which makes it a useful benchmark. A 17-variable piecewise-control
-variant breaks the structure.
-\item \emph{An empirical study} (Secs.~\ref{sec:setup}--\ref{sec:results}) of seven MOEAs, with 30
-runs each on both models and both formulations, that confirms the predictions and separates the two
-mechanisms by which weighted-sum decomposition loses quality.
+and distribution, and a multiplicative $\varepsilon$ loss of the best reachable solution. We quantify
+their dependence on tolerance and resolution and how the effect degrades when the structure holds only
+approximately.
+\item \emph{Two real-world case studies} (Sec.~\ref{sec:case}). A finite-time quantum Otto engine whose
+Pareto front saturates a thermodynamic uncertainty relation, and the sizing of a seawater
+reverse-osmosis plant, where the structure comes from the free scale. Both have exact, cheap
+evaluations and two equivalent formulations. A 17-variable piecewise-control engine breaks the
+structure.
+\item \emph{An empirical study} (Secs.~\ref{sec:setup}--\ref{sec:results}) of eleven algorithms,
+including decomposition methods designed for nonconvex fronts (PBI, $L_p$, localized weighted sum),
+with 30 runs each on every model and formulation, and of the sensitivity to budget and population
+size. It confirms the predictions and separates the two mechanisms by which weighted-sum decomposition
+loses quality.
 \end{enumerate}
 
 Transformations that convexify a front are not new: separable power transformations of the
@@ -125,6 +135,21 @@ $\alpha_i > 0$, since the weights absorb the scales; normalization therefore doe
 Tchebycheff function $\max_i w_i(f_i - z_i^*)$ reaches every Pareto-optimal point for suitable
 weights~\cite{Ehrgott2005}, which is why Tchebycheff-based MOEA/D does not share the limitation.
 
+\paragraph*{Related work} The failure of weighted sums on nonconvex fronts is classical~\cite{DasDennis1997,Marler2004},
+and several remedies exist. Power or exponential transformations of each objective can convexify a
+front~\cite{Li1996}; the adaptive weighted sum adds inequality constraints that steer each subproblem
+into unexplored regions~\cite{KimDeWeck2005}. In decomposition-based MOEAs, the penalty-based boundary
+intersection (PBI)~\cite{ZhangLi2007} and $L_p$ scalarizations, $(\sum_i \lambda_i \hat f_i^{\,p})^{1/p}$,
+which interpolate between the weighted sum ($p = 1$) and Tchebycheff ($p \to \infty$)~\cite{Giagkiozis2015,WangPaS2016},
+reach nonconvex regions, and the localized weighted sum (LWS) restricts each weighted-sum subproblem to
+a hypercone around its weight vector~\cite{WangLWS2018}. The dependence of decomposition-based MOEAs on
+front shape has been documented on benchmark suites~\cite{Ishibuchi2017}, and adaptive weights address
+irregular fronts~\cite{Qi2014,Trivedi2017}. All these works take the front shape as given. Our question is
+different: which modeling choices \emph{produce} a nonconvex front, and can an equivalent formulation
+avoid it. In physics, the shape of Pareto fronts of heat engines has been studied directly, with
+reports of both convex and concave fronts depending on the number of free
+parameters~\cite{Forao2025}, and weighted figures of merit are a common way to trace them~\cite{Erdman2023}.
+
 %=====================================================================
 \section{Theory: ratio versus extensive objectives}
 \label{sec:theory}
@@ -151,7 +176,9 @@ least as good in $a$ and $r$, then $a'\varphi(r') \ge a\varphi(r)$.
 
 \begin{theorem}
 \label{thm:saddle}
-No point of $\mathcal{F}_r$ with $(a,r) \in \operatorname{int} D$ is supported.
+No point of $\mathcal{F}_r$ with $(a,r) \in \operatorname{int} D$ is supported, not even locally: for
+no $w \ge 0$ and no neighborhood $U$ of the point in $\mathcal{F}_r$ is it a minimizer of $w\cdot y$
+over $U$.
 \end{theorem}
 
 \begin{proof}
@@ -163,12 +190,17 @@ requires $\nabla^2\phi = w_3\nabla^2 g \succeq 0$ with $g(a,r) = a\varphi(r)$. B
 \nabla^2 g = \begin{pmatrix} 0 & \varphi'(r)\\ \varphi'(r) & a\varphi''(r)\end{pmatrix},
 \qquad \det\nabla^2 g = -\varphi'(r)^2 < 0,
 \end{equation}
-so $\nabla^2 g$ is indefinite.
+so $\nabla^2 g$ is indefinite. Only first- and second-order necessary conditions at $(a_0,r_0)$ were
+used, so the argument excludes local minimizers as well.
 \end{proof}
 
 Geometrically, the surface is linear along $a$ at fixed $r$ but its slope varies with $r$; locally it
 behaves like the hyperbolic paraboloid $z = xy$ (Fig.~\ref{fig:saddle}, left). The result requires no
-assumption on $\varphi''$.
+assumption on $\varphi''$. Because it is local, it also rules out methods that rely on local
+weighted-sum optimality (e.g., weighted-sum local search restricted to a neighborhood); methods that
+restrict the \emph{feasible region} of each subproblem, such as constraint-based adaptive weighted sums
+or the localized weighted sum of Sec.~\ref{sec:background}, are not covered, because their optima lie on
+the boundary of the restriction.
 
 \subsection{The extensive reformulation}
 
@@ -223,6 +255,55 @@ The corollary predicts a second, independent failure mode: even when every point
 weighted-sum decomposition with uniformly spread weights crowds its solutions onto few rays.
 Fig.~\ref{fig:saddle} shows both geometries for the physical case of Sec.~\ref{sec:case}.
 
+\subsection{A second source of the structure: a free scale}
+\label{sec:freescale}
+
+In Definition~1 the cost is linear in the extensive output at fixed ratio. The physical case of
+Sec.~\ref{sec:otto} obtains this linearity from a thermodynamic bound. A more common mechanism in
+engineering is a free \emph{scale}: many design problems contain a size variable (number of parallel
+units, membrane area, plant capacity) that multiplies every extensive quantity and leaves every ratio
+unchanged. Let the decision vector be $x = (\lambda, z)$ with scale $\lambda \in [\lambda_0,\lambda_1]
+\subset (0,\infty)$ and intensive design $z \in Z \subseteq \mathbb{R}^d$, and let the objectives split
+into $k$ extensive and $m-k$ intensive ones,
+\begin{equation}
+f(\lambda, z) = \bigl(\lambda\, e(z),\ i(z)\bigr), \qquad e: Z \to \mathbb{R}^k,\ i: Z \to \mathbb{R}^{m-k}.
+\label{eq:scale}
+\end{equation}
+
+\begin{theorem}
+\label{thm:scale}
+Let $e, i \in C^1$ and let $(\lambda^*, z^*)$, with $\lambda_0 < \lambda^* < \lambda_1$ and
+$z^* \in \operatorname{int} Z$, minimize $w\cdot f$ over $[\lambda_0,\lambda_1]\times Z$ for some
+$w = (w_E, w_I) \ge 0$. Then (i) $w_E\cdot e(z^*) = 0$ and $(\lambda, z^*)$ is a minimizer for every
+$\lambda \in [\lambda_0,\lambda_1]$; (ii) $z^*$ is a critical point of both $w_E\cdot e$ and $w_I\cdot i$.
+\end{theorem}
+
+\begin{proof}
+$w\cdot f = \lambda A(z) + B(z)$ with $A = w_E\cdot e$ and $B = w_I\cdot i$. Stationarity in $\lambda$
+at an interior $\lambda^*$ gives $A(z^*) = 0$, so $w\cdot f(\lambda, z^*) = B(z^*)$ for all $\lambda$,
+which proves (i). Each $(\lambda, z^*)$ with $\lambda$ in the open interval is then an interior
+minimizer, so $\lambda\nabla A(z^*) + \nabla B(z^*) = 0$ for all such $\lambda$; hence
+$\nabla A(z^*) = \nabla B(z^*) = 0$.
+\end{proof}
+
+\begin{corollary}
+\label{cor:scale}
+If there is a single intensive objective $i$ (a ratio) and $\nabla i \neq 0$ on $\operatorname{int} Z$,
+every weighted sum with positive weight on $i$ is minimized only by designs at the bounds of the scale
+range or of $Z$. In a sizing problem, a figure of merit that rewards the ratio returns only the
+smallest or the largest admissible plant.
+\end{corollary}
+
+When all objectives are extensive ($k = m$), part (i) is the degeneracy of
+Corollary~\ref{cor:degenerate} without any thermodynamic assumption: every supported point with
+interior scale belongs to a whole segment of supported points along the scale direction. Replacing a
+ratio by an extensive cost therefore removes the obstruction of Corollary~\ref{cor:scale}, and whether
+every point becomes supported depends, as in Theorem~\ref{thm:perspective}, on the convexity of the
+front of the intensive design per unit scale. With one extensive output, one ratio and one extensive
+cost, and $\lambda_0 \to 0$, the front of~\eqref{eq:scale} is product-structured with
+$\varphi(r) = \inf\{c/a\}$ at ratio $r$; Theorem~\ref{thm:scale} is then a version of
+Theorem~\ref{thm:saddle} that needs no smoothness of $\varphi$ and holds for any number of objectives.
+
 \begin{remark}[Dimension]
 Theorem~\ref{thm:saddle} needs a two-dimensional $D$. A degenerate (one-dimensional) front lying on
 the saddle can be fully supported, as a line on $z = xy$ shows. Sec.~\ref{sec:lr} gives a physical
@@ -255,9 +336,14 @@ supported, and $s^* > 0$ is its distance from being reachable in normalized unit
 unsupported when $s^* > 10^{-3}$ in coordinates normalized to the unit cube.
 
 \subsection{Hypervolume ceiling and loss decomposition}
-The HV of the supported subset of a reference front is an upper bound on the HV of the solutions
-that \emph{any} weighted-sum method can return, whatever its weights. We call it the
-\emph{weighted-sum ceiling} and split the HV loss of a weighted-sum method into
+Every minimizer of a weighted sum with nonnegative weights is a supported point of the front, so the
+HV of the supported subset of the front is an upper bound on the HV of any set of weighted-sum
+minimizers, whatever the weights and however many there are. We call it the
+\emph{weighted-sum ceiling}. The bound applies to what a weighted-sum method returns at convergence; a
+finite-budget run may still hold solutions that are not optimal for their subproblem, some of which can
+lie in the unsupported region, so we also report the fraction of each run in that region. With a
+discrete reference front the ceiling is computed on the points whose support gap is below the
+tolerance. We split the HV loss of a weighted-sum method into
 \begin{align}
 \text{reachability loss} &= \mathrm{HV}(\text{reference}) - \text{ceiling},\\
 \text{distribution loss} &= \text{ceiling} - \mathrm{HV}(\text{method}).
@@ -277,11 +363,14 @@ solution a weighted-sum designer can obtain is at least a fraction $\varepsilon$
 objective.
 
 %=====================================================================
-\section{Case study: a finite-time quantum Otto engine}
+\section{Case studies}
 \label{sec:case}
 %=====================================================================
 
-\subsection{Model}
+\subsection{A finite-time quantum Otto engine}
+\label{sec:otto}
+
+\paragraph*{Model}
 The working medium is a two-level system (qubit) with energy gap $\omega$ ($\hbar = k_B = 1$),
 as in the device proposed (as a refrigerator) in Ref.~\cite{Karimi2016}: a flux-tunable
 superconducting qubit coupled to two resonators terminated by resistors at different temperatures. The Otto cycle alternates (i) contact with a hot bath at
@@ -302,7 +391,7 @@ $\gamma = 1$, gap-change duration $0.05$ and four decision variables:
 $\omega_h \in [0.1,10]$, $\omega_c/\omega_h \in [T_c/T_h, 1]$ and
 $\log_{10}\tau_{h,c} \in [-2,1]$. Each evaluation is a closed-form expression.
 
-\subsection{Why the structure is exact}
+\paragraph*{Why the structure is exact}
 Thermodynamics bounds the precision of the engine through the thermodynamic uncertainty relation
 (TUR)~\cite{Barato2015,Gingrich2016,Pietzonka2018}, $\Delta P\,\Sigma \ge 2P^2$. On the Pareto front of
 this engine the bound is saturated (median ratio $\xi = 2P^2/(\Delta P\,\Sigma) = 0.996$, maximum
@@ -323,19 +412,54 @@ Theorems~\ref{thm:saddle} and~\ref{thm:perspective} predict a saddle in the firs
 ray-degenerate front in the second. The extensive formulation is the one used by Erdman
 \emph{et al.}~\cite{Erdman2023} in their weighted figure of merit.
 
-\subsection{A variant that breaks the structure}
+\paragraph*{A variant that breaks the structure}
 To test what happens when the product structure fails, we use the quantum-dot engine of
 Ref.~\cite{Erdman2023} with piecewise control: the cycle is split into 8 steps, each with its own gap
 and bath, plus the cycle duration (17 variables). Free control lets the cycle violate the stationary
 TUR, so the front is no longer product-structured.
 
-\subsection{A degenerate limit}
+\paragraph*{A degenerate limit}
 \label{sec:lr}
 Near equilibrium (linear response), the exact fronts of Almanza-Marrero
 \emph{et al.}~\cite{Almanza2026} collapse to a one-parameter curve on the TUR surface,
 $P = 4P_{\max}\bar\eta(1 - \bar\eta)$ with $\bar\eta = \eta/\etaC$, because power and efficiency are
 locked by a single effective degree of freedom. That curve lies on the saddle but is fully supported
 (Remark 1).
+
+\subsection{Sizing a reverse-osmosis desalination plant}
+\label{sec:ro}
+
+\paragraph*{Model} Seawater reverse osmosis (RO) is the dominant desalination technology, and its
+design trades water production, recovery (the fraction of the feed that becomes fresh water) and
+energy~\cite{Elimelech2011,Zhu2009RO}. We model a plant of $n$ identical pressure vessels in parallel
+with the standard one-dimensional module model: complete salt rejection, no concentration
+polarization and no axial pressure drop. Pressures are measured in units of the feed osmotic pressure
+$\pi_0$ ($\approx 27$~bar for seawater) and flows in units of $L_pA\pi_0$. Along a vessel the
+retentate flow obeys $dQ/dx = -(p - q_f/Q)$, $x \in [0,1]$, where $q_f$ is the feed per vessel and $p$
+the applied pressure; the equation is solved in closed form with the Wright $\omega$ function, and the
+thermodynamic restriction $p \ge \pi_0/(1-r)$~\cite{Zhu2009RO} holds automatically. The pump power,
+with pump efficiency $0.8$ and an isobaric energy-recovery device of efficiency $0.95$, is
+$w = p(q_f - 0.95\,Q(1))/0.8$ per vessel. The decision variables are $n \in [1,100]$,
+$\log_{10} q_f \in [-1.5, 1]$ and $p \in [1.02, 3]$ (up to about 82~bar). Concentration polarization,
+pressure drop and flux limits would change the numbers but not the structure: in any model in which
+flows, power and membrane count scale with the number of vessels, $n$ is a free scale and
+Theorem~\ref{thm:scale} applies.
+
+\paragraph*{Formulations} Production $Q$, pump power $W$, number of vessels $n$ (a proxy for capital
+cost) and brine discharge $B = Q(1/r - 1)$ are extensive; recovery $r$ is intensive. The plant has a free
+scale, $\lambda = n$, in the sense of Eq.~\eqref{eq:scale}. We compare
+\begin{align}
+\text{ratio:}\quad & f = (-Q,\ -r,\ W,\ n),\\
+\text{extensive:}\quad & f = (-Q,\ B,\ W,\ n),
+\end{align}
+which have the same Pareto set (Lemma~\ref{lem:same} applies with $s(r) = 1/r - 1$). In the ratio
+formulation Corollary~\ref{cor:scale} predicts that a weighted sum with positive weight on recovery
+returns only plants with $n = 1$ or $n = 100$ (or designs at the bounds of $q_f$ and $p$). In the
+extensive formulation the front is a cone over the front of a single vessel, so it is supported where
+that per-vessel front is convex; but Theorem~\ref{thm:scale}(i) still applies, so an interior-scale
+point is reached only by weights for which the whole segment along the scale ties. For generic weights,
+a weighted sum returns $n \in \{1, 100\}$ in \emph{both} formulations: the reformulation removes the
+reachability obstruction but not the degeneracy.
 
 %=====================================================================
 \section{Experimental setup}
@@ -346,23 +470,39 @@ locked by a single effective degree of freedom. That curve lies on the saddle bu
 SMS-EMOA~\cite{Beume2007}, RVEA~\cite{Cheng2016} (pymoo 0.6.2~\cite{Blank2020}); MOEA/D with
 normalized Tchebycheff~\cite{ZhangLi2007}; MOEA/D-AWA~\cite{Qi2014}; and MOEA/D-WS, identical to
 MOEA/D but with the weighted-sum scalarization, which is the evolutionary counterpart of sweeping the
-weights of a linear figure of merit. All use $N = 105$ (Das--Dennis weights, 13 divisions), SBX
-(probability 1, $\eta_c = 20$) and polynomial mutation ($\eta_m = 20$). MOEA/D variants use a
-neighborhood of $10\%$ of $N$, $\delta = 0.9$, $n_r = 2$ and online normalization. MOEA/D-AWA follows
-Ref.~\cite{Qi2014}: WS-transformed weights, an external population of $1.5N$ truncated by sparsity,
-and replacement of $5\%$ of the weights every 10 generations after $80\%$ of the run.
+weights of a linear figure of merit. To test whether scalarizations designed for nonconvex fronts
+escape the obstruction, the same MOEA/D code is also run with PBI ($\theta = 5$), with the $L_2$ and
+$L_4$ scalarizations and with LWS. Wang \emph{et al.}~\cite{WangLWS2018} set the apex angle of each
+hypercone a priori from the distribution of the weight vectors; our implementation uses as half-angle the
+mean angle between each weight vector and its $m$ nearest neighbors, and outside the cone a subproblem
+prefers solutions closer to it. Because this is an implementation choice, we also scale the half-angle by
+$0.25$, $0.5$, $2$ and $4$ (10 runs each). All
+scalarizations act on objectives normalized online by the ideal point and the nadir of the population.
+All algorithms use Das--Dennis weights or reference directions ($N = 105$ with 13 divisions for $m = 3$;
+$N = 120$ with 7 divisions for $m = 4$), SBX (probability 1, $\eta_c = 20$) and polynomial mutation
+($\eta_m = 20$). MOEA/D variants use a neighborhood of $10\%$ of $N$, $\delta = 0.9$ and $n_r = 2$.
+MOEA/D-AWA follows Ref.~\cite{Qi2014}: WS-transformed weights, an external population of $1.5N$
+truncated by sparsity, and replacement of $5\%$ of the weights every 10 generations after $80\%$ of the
+run.
 
-\paragraph*{Budgets} 400 generations ($42\,000$ evaluations) on the Otto engine and 3000 generations
-($315\,000$) on the piecewise model; 30 independent runs per algorithm and formulation.
+\paragraph*{Budgets} 400 generations on the Otto engine ($42\,000$ evaluations) and on the RO plant
+($48\,000$), and 3000 generations ($315\,000$) on the piecewise model; 30 independent runs per algorithm
+and formulation. SMS-EMOA is omitted on the four-objective RO problem because its exact
+hypervolume-contribution selection is too expensive there. Two sensitivity studies repeat MOEA/D-WS and
+MOEA/D-AWA on the Otto engine with 10 runs each: a five-times larger budget (2000 generations) and a
+larger population ($N = 231$, 20 divisions).
 
-\paragraph*{Reference fronts} Nondominated union of all runs plus a dense grid of the four variables
-(Otto) or five long SMS-EMOA runs (piecewise), thinned on a $60^3$ voxel grid (about 4\,600--4\,900
-points for Otto and 2\,100--2\,400 for the piecewise model).
+\paragraph*{Reference fronts} Nondominated union of all runs plus a dense sample of the decision space
+(a grid of the four variables for Otto, $2^{17}$ Sobol points for RO) or five long SMS-EMOA runs
+(piecewise), thinned on a voxel grid of the normalized objective space ($60^3$ voxels for $m = 3$,
+$16^4$ for $m = 4$).
 
 \paragraph*{Metrics and statistics} HV with reference point $1.1$ in coordinates normalized by the
 reference front~\cite{Zitzler1999}; IGD+~\cite{Ishibuchi2015}. Each algorithm is compared with
 MOEA/D-AWA by a two-sided Mann--Whitney test~\cite{MannWhitney1947} with Holm
-correction~\cite{Holm1979} over six comparisons.
+correction~\cite{Holm1979}, and by the Vargha--Delaney effect size
+$\hat A_{12}$~\cite{VarghaDelaney2000}, the probability that a run of the algorithm has a higher HV than a
+run of MOEA/D-AWA ($0.5$: no difference; $0$ or $1$: complete separation).
 
 %=====================================================================
 \section{Results}
@@ -377,6 +517,36 @@ points each). In the ratio formulation 86--93\% of the points are unsupported fo
 Theorem~\ref{thm:saddle} predicts. In the extensive formulation none are, except for the profile
 chosen so that $\chi$ is concave, where 78\% remain unsupported: the reformulation helps exactly when
 $\chi$ is convex (Theorem~\ref{thm:perspective}).
+
+\paragraph*{Why not 100\%} Theorem~\ref{thm:saddle} says that no interior point is supported, yet the
+ratio column reports 86--93\%. The difference comes from points near the boundary of $D$, whose support
+gap tends to zero, and from the tolerance. For 387 random interior test points
+(Fig.~\ref{fig:robust}a), the unsupported fraction is 66\%, 95\%, 99.7\% and 100\% at tolerances
+$10^{-2}$, $10^{-3}$, $10^{-4}$ and $10^{-5}$, and it does not change when the comparison front is
+refined from 400 to 6400 points (median gap $0.020$ in all cases). The tolerance $10^{-3}$ used
+throughout is therefore conservative: it understates the unsupported fraction.
+
+\paragraph*{When the structure holds only approximately} To address how the effect degrades, we break
+the homogeneity of the cost in $a$ with $c = a^{1+\kappa}\varphi(r)$, where $\kappa < 0$ mimics
+economies of scale and $\kappa > 0$ diseconomies (Fig.~\ref{fig:robust}b,c). The ratio formulation
+remains 81--86\% unsupported for $-0.75 \le \kappa \le 1$, and its weighted-sum ceiling gap peaks at
+$16\%$ of the HV near $\kappa = 0.5$; only for $\kappa \ge 2$, when the cost becomes strongly convex in
+$a$, does the front become largely supported. The extensive formulation behaves asymmetrically: it
+stays fully supported for every $\kappa \ge 0$, but for $\kappa < 0$ the cone becomes concave in $a$ and
+46--78\% of the points become unsupported, although with small gaps (ceiling gap $\le 3.6\%$). Economies
+of scale thus remove the advantage of the extensive reformulation, while the saddle of the ratio
+formulation is robust to moderate departures from exact product structure in either direction.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\linewidth]{figs/fig6_robustness.pdf}
+\caption{Robustness of the diagnostics on synthetic fronts. (a) Exact product structure, ratio
+formulation: unsupported fraction of interior test points against the tolerance on the support gap,
+for comparison fronts of 400, 1600 and 6400 points. (b, c) Cost $c = a^{1+\kappa}\varphi(r)$: unsupported
+fraction and relative weighted-sum ceiling gap, $(\mathrm{HV}_{\mathrm{ref}} - \text{ceiling})/
+\mathrm{HV}_{\mathrm{ref}}$, in both formulations; $\kappa = 0$ is the exact product structure.}
+\label{fig:robust}
+\end{figure*}
 
 \begin{table}[t]
 \caption{Unsupported fraction (max gap) of synthetic product-structured fronts.}
@@ -397,52 +567,87 @@ $6 - 1/(2r^2)$, $\chi$ concave & 93\% (0.188) & 78\% (0.026)\\
 
 \subsection{Otto engine: geometry and algorithms}
 
-On the reference front, 91\% of the points are unsupported in the ratio formulation, with gaps up to
-$0.077$; in the extensive formulation only 4\%, with gaps below $0.005$. The residual 4\% may reflect a
-slightly nonconvex domain $D'$ and the fact that $\xi$ is not exactly 1.
+On the reference front, 92\% of the points are unsupported in the ratio formulation, with gaps up to
+$0.074$; in the extensive formulation only 2\%, with gaps below $0.004$. The residual 2\% reflects that
+$\xi$ is not exactly 1 and that the domain $D'$ is not exactly convex; at tolerance $10^{-5}$ the ratio
+formulation reaches 97\% unsupported points, consistently with Fig.~\ref{fig:robust}a.
 
 \begin{table}[t]
 \caption{Otto engine, 30 runs: median HV (higher is better), median IGD+ and mean number of distinct
-solutions. Every difference with respect to MOEA/D-AWA is significant ($p = 1.8\times10^{-10}$, Holm).}
+solutions out of 105. Every difference in HV with respect to MOEA/D-AWA is significant
+($p \le 3\times10^{-10}$, Holm) with complete or near-complete separation ($\hat A_{12} = 0$ or $1$,
+except SMS-EMOA in the ratio formulation, $0.99$). Below the line: decomposition baselines designed for
+nonconvex fronts.}
 \label{tab:otto}
 \centering
 \footnotesize
-\setlength{\tabcolsep}{3.5pt}
+\setlength{\tabcolsep}{3.2pt}
 \begin{tabular}{lcccccc}
 \toprule
  & \multicolumn{3}{c}{ratio $(P,\eta,\Delta P)$} & \multicolumn{3}{c}{extensive $(P,\Delta P,\Sigma)$}\\
  & HV & IGD+ & dist. & HV & IGD+ & dist.\\
 \midrule
-SMS-EMOA & \textbf{1.0425} & 0.0276 & 105 & \textbf{1.1868} & 0.0183 & 104\\
-MOEA/D-AWA & 1.0404 & \textbf{0.0198} & 105 & 1.1829 & \textbf{0.0142} & 105\\
-MOEA/D & 1.0385 & 0.0251 & 94 & 1.1744 & 0.0220 & 94\\
-NSGA-III & 1.0310 & 0.0252 & 104 & 1.1700 & 0.0227 & 104\\
-RVEA & 1.0269 & 0.0277 & 89 & 1.1683 & 0.0224 & 87\\
-NSGA-II & 1.0073 & 0.0380 & 104 & 1.1612 & 0.0275 & 104\\
-MOEA/D-WS & 0.9670 & 0.0745 & 63 & 1.1220 & 0.0664 & 68\\
+SMS-EMOA & \textbf{1.0425} & 0.0280 & 105 & \textbf{1.1868} & 0.0184 & 104\\
+MOEA/D-AWA & 1.0404 & \textbf{0.0202} & 105 & 1.1829 & 0.0143 & 105\\
+MOEA/D & 1.0385 & 0.0254 & 94 & 1.1744 & 0.0221 & 94\\
+NSGA-III & 1.0310 & 0.0255 & 104 & 1.1700 & 0.0231 & 104\\
+RVEA & 1.0269 & 0.0280 & 89 & 1.1683 & 0.0228 & 87\\
+NSGA-II & 1.0073 & 0.0381 & 104 & 1.1612 & 0.0273 & 104\\
 \midrule
-reference front & 1.0810 & & & 1.2114 & &\\
-WS ceiling & \textbf{0.9950} & & & 1.2113 & &\\
-WS loss: reach.\ + distr. & \multicolumn{3}{c}{$\mathbf{0.086} + 0.028$} & \multicolumn{3}{c}{$0.0001 + \mathbf{0.089}$}\\
+MOEA/D-PBI & 1.0378 & 0.0235 & 104 & 1.1863 & \textbf{0.0125} & 105\\
+MOEA/D-L4 & 1.0365 & 0.0281 & 94 & 1.1784 & 0.0202 & 94\\
+MOEA/D-L2 & 1.0116 & 0.0454 & 77 & 1.1792 & 0.0198 & 93\\
+MOEA/D-LWS & 0.9911 & 0.0290 & 105 & 1.1220 & 0.0255 & 104\\
+MOEA/D-WS & 0.9670 & 0.0753 & 63 & 1.1220 & 0.0662 & 68\\
+\midrule
+reference front & 1.0805 & & & 1.2115 & &\\
+WS ceiling & \textbf{0.9946} & & & 1.2115 & &\\
+WS loss: reach.\ + distr. & \multicolumn{3}{c}{$\mathbf{0.086} + 0.028$} & \multicolumn{3}{c}{$0.000 + \mathbf{0.090}$}\\
 \bottomrule
 \end{tabular}
 \end{table}
 
 Table~\ref{tab:otto} and Fig.~\ref{fig:hv} show that MOEA/D-WS is last in both formulations and loses a
 similar amount of HV, but for different reasons, as the theory predicts. In the ratio formulation
-most of the loss is reachability: no weight vector can recover it, and six of the seven algorithms,
-including NSGA-II, exceed the ceiling of any weighted-sum method. In the extensive formulation the
-ceiling coincides with the reference front and the whole loss is distribution: MOEA/D-WS returns only
-68 distinct solutions out of 105, the crowding predicted by Corollary~\ref{cor:degenerate}. Among the
-other algorithms, SMS-EMOA attains the best HV and MOEA/D-AWA the best IGD+ in both formulations, and
+most of the loss is reachability: no weight vector can recover it, and every run of SMS-EMOA, MOEA/D-AWA,
+MOEA/D, NSGA-III, RVEA, PBI and both $L_p$ variants, and 97\% of the NSGA-II runs, exceed the ceiling of
+any weighted-sum method. In the extensive formulation the ceiling coincides with the reference front and
+the whole loss is distribution: MOEA/D-WS returns only 68 distinct solutions out of 105, the crowding
+predicted by Corollary~\ref{cor:degenerate}. Among the other algorithms, SMS-EMOA attains the best HV in
+both formulations, MOEA/D-AWA the best IGD+ in the ratio formulation and PBI in the extensive one, and
 adaptive weights improve on fixed Tchebycheff weights.
+
+\paragraph*{Scalarizations designed for nonconvex fronts} PBI and the $L_p$ scalarizations escape the
+saddle, and $L_p$ improves monotonically from $p = 1$ (the weighted sum, $0.9670$) through $p = 2$
+($1.0116$) to $p = 4$ ($1.0365$), approaching Tchebycheff ($1.0385$). The localized weighted sum depends on the width of its cones. With our default half-angle, its median HV
+in the ratio formulation ($0.9911$) lies below the weighted-sum ceiling, which only 27\% of its runs
+exceed, although it spreads its solutions well (105 distinct, IGD+ $0.029$); in the extensive formulation
+it ties with MOEA/D-WS. Inside a cone, the weighted-sum optimum on a saddle lies on the cone boundary
+(Theorem~\ref{thm:saddle} excludes interior optima), so the cone width controls how far solutions can
+drift from their weight direction. A sensitivity study with 10 runs per setting confirms this: scaling
+the half-angle by $2$ and $4$ lowers the median HV to $0.9443$ and $0.8504$ (no run above the ceiling),
+whereas scaling it by $0.5$ and $0.25$ raises it to $1.0212$ and $1.0342$, with every run above the
+ceiling. In the extensive formulation the same factors give $1.1739$, $1.1569$, $1.1220$, $1.0663$ and
+$1.0424$ for $0.25$, $0.5$, $1$, $2$ and $4$. LWS therefore escapes the saddle only when its cones are
+narrow enough to act as a direction constraint, which makes it behave like a boundary-intersection
+method rather than a weighted sum.
+
+\paragraph*{Budget and population size} The losses are not an artifact of the budget or of the number
+of weights. With a five-times larger budget (2000 generations, 10 runs), MOEA/D-WS reaches HV $0.9671$
+(ratio) and $1.1222$ (extensive), indistinguishable from the 400-generation runs, while MOEA/D-AWA
+improves slightly ($1.0422$ and $1.1815$). With $N = 231$ weight vectors MOEA/D-WS reaches $0.9791$ in
+the ratio formulation, still below the ceiling ($0.9946$) in every run, with 128 distinct solutions out
+of 231; MOEA/D-AWA reaches $1.0582$. In the extensive formulation MOEA/D-WS stays at $1.1182$ with 146
+distinct solutions out of 231, so more weights do not cure the degeneracy either.
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.85\linewidth]{figs/fig3_hv_otto.pdf}
-\caption{HV of seven MOEAs on the Otto engine (30 runs). Dotted: reference front. Dashed: ceiling of
-any weighted-sum method. In the ratio formulation (left) the ceiling lies below six algorithms; in
-the extensive formulation (right) it coincides with the reference front.}
+\includegraphics[width=0.9\linewidth]{figs/fig3b_hv_otto_all.pdf}
+\caption{HV of eleven algorithms on the Otto engine (30 runs). Dotted: reference front. Dashed: ceiling
+of any weighted-sum method. Orange: weighted sum; light orange: decomposition baselines designed for
+nonconvex fronts. In the ratio formulation (left) the ceiling lies below every algorithm except
+MOEA/D-WS and most runs of MOEA/D-LWS; in the extensive formulation (right) it coincides with the
+reference front.}
 \label{fig:hv}
 \end{figure*}
 
@@ -463,6 +668,65 @@ in the $(P,\eta)$ plane. Left: weighted sum in the ratio formulation. Right: in 
 formulation.}
 \label{fig:cost}
 \end{figure*}
+
+\subsection{Reverse-osmosis plant}
+
+\begin{table}[t]
+\caption{RO plant, 30 runs: median HV, median IGD+ and fraction of final solutions with $n$ within
+$0.5$ of a bound of the scale range ($n \in [1,100]$).}
+\label{tab:ro}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.0pt}
+\begin{tabular}{lcccccc}
+\toprule
+ & \multicolumn{3}{c}{ratio $(Q,r,W,n)$} & \multicolumn{3}{c}{extensive $(Q,B,W,n)$}\\
+ & HV & IGD+ & bound & HV & IGD+ & bound\\
+\midrule
+MOEA/D-PBI & \textbf{0.5596} & \textbf{0.0314} & 20\% & \textbf{0.5774} & \textbf{0.0384} & 18\%\\
+MOEA/D-L2 & 0.5473 & 0.0329 & 52\% & 0.5595 & 0.0410 & 53\%\\
+NSGA-II & 0.5448 & 0.0323 & 7\% & 0.5726 & 0.0438 & 6\%\\
+NSGA-III & 0.5418 & 0.0350 & 18\% & 0.5710 & 0.0413 & 15\%\\
+MOEA/D-AWA & 0.5241 & 0.0388 & 40\% & 0.5395 & 0.0476 & 41\%\\
+MOEA/D-LWS & 0.5218 & 0.0388 & 18\% & 0.5411 & 0.0405 & 22\%\\
+MOEA/D & 0.5115 & 0.0509 & 54\% & 0.5466 & 0.0485 & 57\%\\
+MOEA/D-L4 & 0.4690 & 0.0664 & 23\% & 0.4907 & 0.0717 & 23\%\\
+RVEA & 0.3681 & 0.1180 & 32\% & 0.5428 & 0.0452 & 14\%\\
+MOEA/D-WS & 0.2059 & 0.1736 & \textbf{100\%} & 0.2096 & 0.1933 & \textbf{100\%}\\
+\midrule
+reference / WS ceiling & \multicolumn{3}{c}{0.6099 / 0.5939} & \multicolumn{3}{c}{0.6213 / 0.6201}\\
+WS loss: reach.\ + distr. & \multicolumn{3}{c}{$0.016 + 0.388$} & \multicolumn{3}{c}{$0.001 + 0.410$}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The support test finds 44\% of the reference front unsupported in the ratio formulation (82\% at
+tolerance $10^{-5}$) and 24\% in the extensive formulation (46\% at $10^{-5}$), with small gaps in both
+($\le 0.012$). The reachability part of the weighted-sum loss is correspondingly small: the ceiling is
+$2.6\%$ below the reference HV in the ratio formulation and $0.2\%$ in the extensive one
+(Table~\ref{tab:ro}). Recovery thus hides a part of the front, as Corollary~\ref{cor:scale} predicts,
+but less of it than efficiency does on the Otto engine, because the per-vessel trade-off between
+production and energy is nearly convex.
+
+The dominant effect is the degeneracy of Theorem~\ref{thm:scale}(i). Every final solution of every
+MOEA/D-WS run lies at $n = 1$ or $n = 100$, in both formulations (Fig.~\ref{fig:roscale}), against 6--7\%
+for NSGA-II and 18--20\% for PBI, and MOEA/D-WS keeps only 42--44 distinct solutions out of 120. Its HV
+is about a third of the reference HV, and almost all of the loss is distribution. A weighted figure of
+merit for this sizing problem therefore designs only the smallest or the largest admissible plant,
+whichever objectives are used. Every other method, including the localized weighted sum, avoids the
+collapse; PBI is best in HV and IGD+ in both formulations ($\hat A_{12} = 1$ against MOEA/D-AWA, Holm
+$p = 3\times10^{-10}$), followed by NSGA-II, NSGA-III and $L_2$. Unlike on the Otto engine, $L_4$ is
+worse than $L_2$ here, and RVEA, whose reference vectors adapt poorly to this front, loses much more in
+the ratio than in the extensive formulation.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figs/fig8_ro_scale.pdf}
+\caption{Number of vessels $n$ in the final solutions of 30 runs of MOEA/D-WS and NSGA-II on the RO
+plant. Weighted-sum decomposition returns only the smallest or the largest plant in both formulations
+(Theorem~\ref{thm:scale} and Corollary~\ref{cor:scale}).}
+\label{fig:roscale}
+\end{figure}
 
 \subsection{Degenerate limit}
 
@@ -490,7 +754,8 @@ reference front has $\xi > 1$), so neither theorem applies. The support test fla
 convex in both formulations. MOEA/D-WS still differs between formulations, ranking second in the
 extensive one and behind MOEA/D-AWA in the ratio one, but its loss is now distribution only, which
 the theory does not address. MOEA/D-AWA and fixed-weight Tchebycheff MOEA/D are statistically
-indistinguishable on this problem ($p = 0.71$ and $0.49$).
+indistinguishable on this problem ($p = 0.71$ and $0.49$). Because neither theorem applies here, the
+additional decomposition baselines were not run on this model.
 
 \begin{table}[t]
 \caption{Piecewise model, 30 runs, median HV; $p$-values (Holm) vs.\ MOEA/D-AWA.}
@@ -531,23 +796,31 @@ weighted-sum ceiling is close to the reference front in both formulations.}
 \paragraph*{Guidelines} (i) Before trusting a weighted-sum sweep, run the support test of
 Eq.~\eqref{eq:gap} on a front obtained by a dominance-based or Tchebycheff method; it costs one small
 linear program per point. (ii) When a ratio objective appears together with an extensive output and a
-cost proportional to it, rewrite the ratio as an extensive cost and check that the profile $\chi$ is
-convex; if it is, every solution becomes reachable. (iii) Even then, weighted-sum decomposition loses
-quality through degeneracy along rays; Tchebycheff, adaptive weights or indicator-based selection
-avoid both losses. (iv) Report the weighted-sum ceiling alongside HV when comparing scalarizations; it
-separates what the weights could fix from what they cannot.
+cost proportional to it, or when the design has a free scale, rewrite the ratio as an extensive cost and
+check that the profile $\chi$ is convex; if it is, every solution becomes reachable. (iii) The
+reformulation does not remove the degeneracy along rays, and with a free scale it leaves weighted sums
+at the bounds of the scale for generic weights; Tchebycheff, PBI, $L_p$ with $p \ge 4$, adaptive weights
+or indicator-based selection avoid both losses, and the localized weighted sum avoids them only with
+narrow cones (half-angle well below the spacing of the weight vectors). (iv) Report the weighted-sum ceiling alongside HV when comparing
+scalarizations; it separates what the weights could fix from what they cannot.
 
-\paragraph*{A benchmark with controllable geometry} The Otto engine offers two formulations of the same
+\paragraph*{Benchmarks with controllable geometry} The Otto engine offers two formulations of the same
 solutions with known front shapes (saddle and ray-degenerate convex), exact and cheap evaluations,
-four variables and a physical interpretation. Its piecewise variant offers a harder, higher-dimensional
-problem with a nearly convex front. Both complement synthetic suites~\cite{Deb2005DTLZ} and existing
-real-world suites~\cite{Tanabe2020}.
+four variables and a physical interpretation. The RO plant adds a four-objective problem with a free
+scale, and the piecewise engine a harder, higher-dimensional problem with a nearly convex front. They
+complement synthetic suites~\cite{Deb2005DTLZ} and existing real-world suites~\cite{Tanabe2020}.
 
-\paragraph*{Limitations} The theorems assume an exact product structure; real fronts satisfy it only
-approximately, and the piecewise model shows that the effect vanishes when the structure is broken
-strongly. How the reachability loss interpolates between these regimes is open. The support test and
-the ceiling use a discrete reference front, so they carry an error of the order of the tolerance.
-Adaptive weights gave a clear advantage on the Otto engine but none on the piecewise model.
+\paragraph*{Limitations} The theorems assume an exact product structure or an exact free scale; real
+fronts satisfy them only approximately. The $\kappa$ family shows that the saddle of the ratio formulation
+survives moderate departures, that economies of scale ($\kappa < 0$) make the extensive formulation
+nonconvex as well, and that strong diseconomies ($\kappa \ge 2$) convexify the front; the piecewise model
+shows that the effect vanishes when the structure is broken strongly. The magnitude of the reachability
+loss is problem dependent (8\% of the HV on the Otto engine, 2.6\% on the RO plant) even when the
+qualitative prediction holds. The support test and the ceiling use a discrete reference front, so they
+carry an error of the order of the tolerance; we showed that the tolerance used understates the
+unsupported fraction. The RO model is idealized (no concentration polarization, pressure drop or fouling
+constraints), and SMS-EMOA was not run on it. Adaptive weights gave a clear advantage on the Otto engine
+but not on the RO plant or the piecewise model.
 
 %=====================================================================
 \section{Conclusion}
@@ -555,11 +828,12 @@ Adaptive weights gave a clear advantage on the Otto engine but none on the piece
 
 Whether a weighted-sum decomposition can reach a Pareto front is not only a property of the problem
 but also of the objectives chosen to describe it. For fronts in which a cost is proportional to an
-extensive output at fixed ratio, the ratio formulation produces a saddle that hides every interior
-solution from any weighted sum, and an extensive reformulation produces a convex, ray-degenerate front
-when a one-dimensional profile is convex. The proposed diagnostics separate the resulting
-reachability loss from the distribution loss caused by degeneracy, and a quantum heat engine provides
-an exact real-world instance of both effects.
+extensive output at fixed ratio, which includes every design problem with a free scale, the ratio
+formulation produces a saddle that hides every interior solution from any weighted sum, even locally,
+and an extensive reformulation produces a convex, ray-degenerate front when a one-dimensional profile is
+convex. The proposed diagnostics separate the resulting reachability loss from the distribution loss
+caused by degeneracy. A quantum heat engine and a desalination plant show both effects in practice, and
+show that decomposition methods with a nonlinear scalarization (Tchebycheff, PBI, $L_p$) avoid them.
 
 \section*{Data and code availability}
 Code, raw runs and analysis scripts are available at \url{https://github.com/uwo-o/hidden-front}. All results can be reproduced with the scripts in that repository.

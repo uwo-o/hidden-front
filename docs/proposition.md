@@ -30,7 +30,13 @@ with $D$ two-dimensional and $\varphi>0$, $\varphi'>0$.
    linear along rays $b/a=\text{const}$. Each supporting weighted sum is minimized along a whole
    segment, so weighted-sum decomposition crowds its solutions.
 
-4. **Dimension.** Theorem 1 needs a two-dimensional $D$. A one-dimensional front lying on the saddle
+4. **Free scale (Theorem 3).** If the decision vector is (lambda, z) with a scale lambda that multiplies
+   every extensive objective and leaves intensive ones unchanged, a supported point with interior scale
+   requires w_E . e(z*) = 0 and is tied along the whole scale segment, and z* must be critical for the
+   weighted intensive objectives. With one ratio whose gradient never vanishes, a weighted sum that
+   rewards the ratio returns only designs at the scale bounds.
+
+5. **Dimension.** Theorem 1 needs a two-dimensional $D$. A one-dimensional front lying on the saddle
    can be fully supported.
 
 ## The physical case: TUR saturation
@@ -54,9 +60,12 @@ The symbolic Hessians are checked in `scripts/support_geometry.py`.
 |---|---|---|
 | Synthetic product-structured fronts, four profiles $\varphi$ | `scripts/synthetic_fronts.py` | 86-93% unsupported with the ratio objective; 0% with the extensive one when $\chi$ is convex; 78% when $\chi$ is concave |
 | Synthetic TUR-saturating surface | `scripts/support_geometry.py` | 85-86% unsupported in $(P,\eta,\Delta P)$; 0% in $(P,\Delta P,\Sigma)$ |
-| Single-qubit Otto engine (saturates the TUR, two-dimensional front) | `scripts/analyze_experiment.py --model otto` | 91% unsupported with $\eta$; 4% with $\Sigma$. The weighted-sum HV ceiling is 0.9950 vs. 1.0810 for the reference front with $\eta$, and 1.2113 vs. 1.2114 with $\Sigma$ |
+| Single-qubit Otto engine (saturates the TUR, two-dimensional front) | `scripts/analyze_experiment.py --model otto` | 92% unsupported with $\eta$; 2% with $\Sigma$. The weighted-sum HV ceiling is 0.9946 vs. 1.0805 for the reference front with $\eta$, and 1.2115 vs. 1.2115 with $\Sigma$ |
 | Physical cost for a weighted-sum designer | `scripts/physical_cost.py` | With $\eta$: 11% of the front reachable, median loss 14%. With $\Sigma$: median loss 0% |
 | Linear response (one-dimensional front) | `scripts/linear_response.py` | The front is a curve on the TUR surface and is 100% supported |
+| Reverse-osmosis plant sizing (free scale, 4 objectives) | `scripts/analyze_extended.py --model ro` | 44% unsupported with recovery, 24% with brine; ceiling gap 2.6% vs 0.2%; every MOEA/D-WS solution at n = 1 or 100 in both formulations |
+| Tolerance and resolution | `scripts/structure_robustness.py` | Interior points: 95% unsupported at 1e-3, 100% at 1e-5, independent of resolution |
+| Breaking homogeneity, c = a^(1+kappa) phi(r) | `scripts/structure_robustness.py` | Ratio formulation 81-86% unsupported for kappa in [-0.75, 1]; extensive formulation nonconvex for kappa < 0 |
 | Piecewise control (violates the TUR, $\xi$ up to 4) | `scripts/analyze_experiment.py --model piecewise` | Nearly convex in both formulations: the weighted-sum ceiling is within 0.1-0.2% of the reference HV |
 
 ## Decomposition of the weighted-sum loss
@@ -74,7 +83,7 @@ distribution with $\Sigma$ (0.0001 + 0.089), as Theorems 1-2 and Corollary 1 pre
 
 - Real fronts are only approximately product-structured. On the Otto engine $\xi$ ranges between about
   0.95 and 1.005; cyclic engines can slightly exceed the steady-state bound.
-- When the structure is broken strongly (piecewise control), the effect vanishes. How the reachability
-  loss interpolates between the two regimes is open.
+- When the structure is broken strongly (piecewise control or kappa >= 2), the effect vanishes; economies
+  of scale (kappa < 0) also make the extensive formulation nonconvex.
 - The support test and the ceiling use a discrete reference front, so they carry an error of the order
   of the tolerance ($10^{-3}$ in normalized units).

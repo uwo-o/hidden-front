@@ -84,3 +84,41 @@ class PiecewiseQDProblem(Problem):
 
     def _evaluate(self, X, out, *args, **kwargs):
         out["F"] = self.objectives_from_stats(self.stats(X))
+
+
+RO_FORMULATIONS = ("recovery", "brine")
+
+
+class DesalinationProblem(Problem):
+    """Reverse-osmosis plant sizing with four objectives (see hidden_front.desalination).
+
+    x = [n, log10 q_f, p]: number of parallel pressure vessels (the free scale), feed flow per vessel
+    and applied pressure (both in the dimensionless units of the model).
+
+    objectives="recovery": f = [-Q, -r, W, n]   (ratio formulation)
+    objectives="brine":    f = [-Q, B, W, n]    (extensive formulation: brine discharge)
+    """
+
+    def __init__(self, params=None, n_bounds=(1.0, 100.0), log_qf_bounds=(-1.5, 1.0),
+                 p_bounds=(1.02, 3.0), objectives="recovery"):
+        from .desalination import ROParams
+        if objectives not in RO_FORMULATIONS:
+            raise ValueError("objectives must be 'recovery' or 'brine'")
+        self.params = params or ROParams()
+        self.objectives = objectives
+        xl = np.array([n_bounds[0], log_qf_bounds[0], p_bounds[0]])
+        xu = np.array([n_bounds[1], log_qf_bounds[1], min(p_bounds[1], self.params.p_max)])
+        super().__init__(n_var=3, n_obj=4, xl=xl, xu=xu)
+
+    def stats(self, X):
+        from .desalination import plant
+        X = np.atleast_2d(X)
+        return plant(X[:, 0], 10.0 ** X[:, 1], X[:, 2], self.params)
+
+    def objectives_from_stats(self, s):
+        if self.objectives == "recovery":
+            return np.column_stack([-s["Q"], -s["r"], s["W"], s["n"]])
+        return np.column_stack([-s["Q"], s["B"], s["W"], s["n"]])
+
+    def _evaluate(self, X, out, *args, **kwargs):
+        out["F"] = self.objectives_from_stats(self.stats(X))
