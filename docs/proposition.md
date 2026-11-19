@@ -63,7 +63,7 @@ The symbolic Hessians are checked in `scripts/support_geometry.py`.
 | Single-qubit Otto engine (saturates the TUR, two-dimensional front) | `scripts/analyze_experiment.py --model otto` | 92% unsupported with $\eta$; 2% with $\Sigma$. The weighted-sum HV ceiling is 0.9946 vs. 1.0805 for the reference front with $\eta$, and 1.2115 vs. 1.2115 with $\Sigma$ |
 | Physical cost for a weighted-sum designer | `scripts/physical_cost.py` | With $\eta$: 11% of the front reachable, median loss 14%. With $\Sigma$: median loss 0% |
 | Linear response (one-dimensional front) | `scripts/linear_response.py` | The front is a curve on the TUR surface and is 100% supported |
-| Reverse-osmosis plant sizing (free scale, 4 objectives) | `scripts/analyze_extended.py --model ro` | 44% unsupported with recovery, 24% with brine; ceiling gap 2.6% vs 0.2%; every MOEA/D-WS solution at n = 1 or 100 in both formulations |
+| Reverse-osmosis plant sizing (free scale, 4 objectives) | `scripts/analyze_extended.py --model ro` | 43% unsupported with recovery, 24% with brine; ceiling gap 2.6% vs 0.2%; every MOEA/D-WS solution at n = 1 or 100 in both formulations |
 | Tolerance and resolution | `scripts/structure_robustness.py` | Interior points: 95% unsupported at 1e-3, 100% at 1e-5, independent of resolution |
 | Breaking homogeneity, c = a^(1+kappa) phi(r) | `scripts/structure_robustness.py` | Ratio formulation 81-86% unsupported for kappa in [-0.75, 1]; extensive formulation nonconvex for kappa < 0 |
 | Piecewise control (violates the TUR, $\xi$ up to 4) | `scripts/analyze_experiment.py --model piecewise` | Nearly convex in both formulations: the weighted-sum ceiling is within 0.1-0.2% of the reference HV |

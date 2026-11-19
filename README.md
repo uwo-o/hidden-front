@@ -35,9 +35,9 @@ MOEA/D-AWA, NSGA-II/III, RVEA, PBI, L2, L4) exceeds the hypervolume ceiling of a
 at least 97% of its runs in the efficiency formulation. The losses persist with five times the budget
 and twice the population.
 
-For the reverse-osmosis plant (production, recovery, pump power, number of vessels), recovery hides 44%
+For the reverse-osmosis plant (production, recovery, pump power, number of vessels), recovery hides 43%
 of the front, and weighted-sum decomposition returns only plants with the minimum or maximum number of
-vessels in both formulations, losing two thirds of the hypervolume; PBI performs best.
+vessels in both formulations, losing two thirds of the hypervolume; PBI and SMS-EMOA perform best.
 
 ## Installation
 

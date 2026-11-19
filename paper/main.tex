@@ -46,7 +46,7 @@ unsupported with efficiency as an objective, and every method other than the wei
 weighted sum with wide cones exceeds the ceiling of any weighted sum in at least 97\% of its runs; with entropy production the ceiling coincides with
 the reference front. On the sizing of a seawater reverse-osmosis plant, weighted-sum decomposition
 returns only plants of minimal or maximal size in both formulations and loses two thirds of the
-hypervolume, while PBI performs best. The losses persist with five times the budget and twice the
+hypervolume, while PBI and SMS-EMOA perform best. The losses persist with five times the budget and twice the
 population, and a controlled family of fronts shows how they degrade when the structure holds only
 approximately.
 \end{abstract}
@@ -487,8 +487,8 @@ run.
 
 \paragraph*{Budgets} 400 generations on the Otto engine ($42\,000$ evaluations) and on the RO plant
 ($48\,000$), and 3000 generations ($315\,000$) on the piecewise model; 30 independent runs per algorithm
-and formulation. SMS-EMOA is omitted on the four-objective RO problem because its exact
-hypervolume-contribution selection is too expensive there. Two sensitivity studies repeat MOEA/D-WS and
+and formulation, except SMS-EMOA on the four-objective RO problem, which is run 10 times because its
+exact hypervolume-contribution selection is expensive there. Two sensitivity studies repeat MOEA/D-WS and
 MOEA/D-AWA on the Otto engine with 10 runs each: a five-times larger budget (2000 generations) and a
 larger population ($N = 231$, 20 divisions).
 
@@ -673,7 +673,8 @@ formulation.}
 
 \begin{table}[t]
 \caption{RO plant, 30 runs: median HV, median IGD+ and fraction of final solutions with $n$ within
-$0.5$ of a bound of the scale range ($n \in [1,100]$).}
+$0.5$ of a bound of the scale range ($n \in [1,100]$). $^\dagger$10 runs, because of the cost of exact
+hypervolume contributions in four objectives.}
 \label{tab:ro}
 \centering
 \footnotesize
@@ -683,24 +684,25 @@ $0.5$ of a bound of the scale range ($n \in [1,100]$).}
  & \multicolumn{3}{c}{ratio $(Q,r,W,n)$} & \multicolumn{3}{c}{extensive $(Q,B,W,n)$}\\
  & HV & IGD+ & bound & HV & IGD+ & bound\\
 \midrule
-MOEA/D-PBI & \textbf{0.5596} & \textbf{0.0314} & 20\% & \textbf{0.5774} & \textbf{0.0384} & 18\%\\
-MOEA/D-L2 & 0.5473 & 0.0329 & 52\% & 0.5595 & 0.0410 & 53\%\\
-NSGA-II & 0.5448 & 0.0323 & 7\% & 0.5726 & 0.0438 & 6\%\\
-NSGA-III & 0.5418 & 0.0350 & 18\% & 0.5710 & 0.0413 & 15\%\\
-MOEA/D-AWA & 0.5241 & 0.0388 & 40\% & 0.5395 & 0.0476 & 41\%\\
+MOEA/D-PBI & \textbf{0.5596} & \textbf{0.0315} & 20\% & 0.5774 & \textbf{0.0385} & 18\%\\
+SMS-EMOA$^\dagger$ & 0.5519 & 0.0375 & 50\% & \textbf{0.5816} & 0.0418 & 48\%\\
+MOEA/D-L2 & 0.5473 & 0.0329 & 52\% & 0.5595 & 0.0409 & 53\%\\
+NSGA-II & 0.5448 & 0.0324 & 7\% & 0.5726 & 0.0438 & 6\%\\
+NSGA-III & 0.5418 & 0.0352 & 18\% & 0.5710 & 0.0414 & 15\%\\
+MOEA/D-AWA & 0.5241 & 0.0388 & 40\% & 0.5395 & 0.0477 & 41\%\\
 MOEA/D-LWS & 0.5218 & 0.0388 & 18\% & 0.5411 & 0.0405 & 22\%\\
-MOEA/D & 0.5115 & 0.0509 & 54\% & 0.5466 & 0.0485 & 57\%\\
+MOEA/D & 0.5115 & 0.0508 & 54\% & 0.5466 & 0.0485 & 57\%\\
 MOEA/D-L4 & 0.4690 & 0.0664 & 23\% & 0.4907 & 0.0717 & 23\%\\
-RVEA & 0.3681 & 0.1180 & 32\% & 0.5428 & 0.0452 & 14\%\\
-MOEA/D-WS & 0.2059 & 0.1736 & \textbf{100\%} & 0.2096 & 0.1933 & \textbf{100\%}\\
+RVEA & 0.3681 & 0.1179 & 32\% & 0.5428 & 0.0451 & 14\%\\
+MOEA/D-WS & 0.2059 & 0.1736 & \textbf{100\%} & 0.2096 & 0.1939 & \textbf{100\%}\\
 \midrule
-reference / WS ceiling & \multicolumn{3}{c}{0.6099 / 0.5939} & \multicolumn{3}{c}{0.6213 / 0.6201}\\
-WS loss: reach.\ + distr. & \multicolumn{3}{c}{$0.016 + 0.388$} & \multicolumn{3}{c}{$0.001 + 0.410$}\\
+reference / WS ceiling & \multicolumn{3}{c}{0.6103 / 0.5943} & \multicolumn{3}{c}{0.6214 / 0.6201}\\
+WS loss: reach.\ + distr. & \multicolumn{3}{c}{$0.016 + 0.388$} & \multicolumn{3}{c}{$0.001 + 0.411$}\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The support test finds 44\% of the reference front unsupported in the ratio formulation (82\% at
+The support test finds 43\% of the reference front unsupported in the ratio formulation (81\% at
 tolerance $10^{-5}$) and 24\% in the extensive formulation (46\% at $10^{-5}$), with small gaps in both
 ($\le 0.012$). The reachability part of the weighted-sum loss is correspondingly small: the ceiling is
 $2.6\%$ below the reference HV in the ratio formulation and $0.2\%$ in the extensive one
@@ -714,8 +716,9 @@ for NSGA-II and 18--20\% for PBI, and MOEA/D-WS keeps only 42--44 distinct solut
 is about a third of the reference HV, and almost all of the loss is distribution. A weighted figure of
 merit for this sizing problem therefore designs only the smallest or the largest admissible plant,
 whichever objectives are used. Every other method, including the localized weighted sum, avoids the
-collapse; PBI is best in HV and IGD+ in both formulations ($\hat A_{12} = 1$ against MOEA/D-AWA, Holm
-$p = 3\times10^{-10}$), followed by NSGA-II, NSGA-III and $L_2$. Unlike on the Otto engine, $L_4$ is
+collapse. Among the methods with 30 runs, PBI is best in HV in both formulations ($\hat A_{12} = 1$
+against MOEA/D-AWA, Holm $p = 3\times10^{-10}$), followed by NSGA-II, NSGA-III and $L_2$; SMS-EMOA,
+run 10 times, is second in the ratio formulation and first in the extensive one. Unlike on the Otto engine, $L_4$ is
 worse than $L_2$ here, and RVEA, whose reference vectors adapt poorly to this front, loses much more in
 the ratio than in the extensive formulation.
 
@@ -819,7 +822,7 @@ loss is problem dependent (8\% of the HV on the Otto engine, 2.6\% on the RO pla
 qualitative prediction holds. The support test and the ceiling use a discrete reference front, so they
 carry an error of the order of the tolerance; we showed that the tolerance used understates the
 unsupported fraction. The RO model is idealized (no concentration polarization, pressure drop or fouling
-constraints), and SMS-EMOA was not run on it. Adaptive weights gave a clear advantage on the Otto engine
+constraints). Adaptive weights gave a clear advantage on the Otto engine
 but not on the RO plant or the piecewise model.
 
 %=====================================================================

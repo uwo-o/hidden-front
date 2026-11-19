@@ -15,7 +15,7 @@ We added a second case study from a mainstream domain: the sizing of a seawater 
 with 4 objectives (production, recovery, pump power, number of vessels) and an extensive reformulation
 (brine discharge instead of recovery). The model has a closed-form solution, validated against ODE
 integration to 1e-11, and 9 unit tests. The structure comes from the free scale, not from thermodynamic
-uncertainty relations. Results: recovery hides 44% of the front, but the reachability loss is modest
+uncertainty relations. Results: recovery hides 43% of the front, but the reachability loss is modest
 (2.6% of HV). The dominant effect, predicted by Theorem 3(i), is that every MOEA/D-WS solution lies at
 n = 1 or n = 100 in both formulations, which costs two thirds of the HV.
 
@@ -69,8 +69,9 @@ Vargha–Delaney Â12 is reported for every comparison. Almost all comparisons a
 **Corrections made during the revision.**
 - The L_p scalarization was first implemented as (Σ λ_i f_i^p)^(1/p), which does not tend to
   Tchebycheff. It is now (Σ (λ_i f_i)^p)^(1/p), with a unit test, and those runs were repeated.
-- SMS-EMOA is omitted on the four-objective RO problem because exact hypervolume-contribution selection
-  is too expensive there. This is stated in the paper.
+- SMS-EMOA was added to the four-objective RO problem with 10 runs, because exact
+  hypervolume-contribution selection is expensive there. It is second in HV in the ratio formulation
+  and first in the extensive one.
 
 ---
 
